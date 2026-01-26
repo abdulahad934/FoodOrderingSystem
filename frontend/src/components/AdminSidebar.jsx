@@ -1,111 +1,97 @@
 import React, { useState } from 'react'
-import '../style/admin.css'
 import { Link } from 'react-router-dom'
-import { FaEdit, FaSearch, FaThLarge, FaUsers } from 'react-icons/fa'
+import {
+  FaChevronDown,
+  FaChevronUp,
+  FaCommentAlt,
+  FaEdit,
+  FaFile,
+  FaList,
+  FaSearch,
+  FaThLarge,
+  FaUsers
+} from 'react-icons/fa'
+import '../style/admin.css'
 
 const AdminSidebar = () => {
-//   const [openMenus, setOpenMenus] = useState({
-//     category: false,
-//     food: false,
-//   })
-
-//   const toggleMenu = (menu) => {
-//     setOpenMenus((prev) => ({
-//       ...prev,
-//       [menu]: !prev[menu],
-//     }))
-//   }
-
-const [openMenus, setOpenMenus] = useState({
+  const [openMenus, setOpenMenus] = useState({
     category: false,
-    food : false
-})
+    food: false,
+    orders: false,
+  })
 
-const toggleMenu = (menu) => {
+  const toggleMenu = (menu) => {
     setOpenMenus((prev) => ({
-        ...prev,
-        [menu]: !prev[menu]
+      ...prev,
+      [menu]: !prev[menu],
     }))
-}
+  }
 
   return (
-    <div className="bg-dark text-white sidebar">
-      {/* Admin Profile */}
-      <div className="text-center p-3 border-bottom">
-        <img
-          src="/img/admin.jpg"
-          alt="admin"
-          className="img-fluid rounded-circle"
-          style={{ width: '100px', height: '100px', objectFit: 'cover' }}
-        />
-        <h6 className="pt-2">Admin</h6>
+    <div className="sidebar">
+      {/* Profile */}
+      <div className="profile-card">
+        <img src="/img/admin.jpg" alt="admin" />
+        <h6>Admin</h6>
+        <small className="role">System Administrator</small>
       </div>
 
       {/* Menu */}
-      <div className="list-group list-group-flush">
-
-        <Link to="/admin/dashboard" className="list-group-item list-group-action bg-dark text-white">
-          <FaThLarge className="me-2" />
-          Dashboard
+      <div className="menu-list">
+        <Link to="/admin/dashboard" className="menu-item">
+          <FaThLarge className="me-2" /> Dashboard
         </Link>
 
-        <Link to="/admin/users" className="list-group-item list-group-action bg-dark text-white">
-          <FaUsers className="me-2" />
-          Reg Users
+        <Link to="/admin/users" className="menu-item">
+          <FaUsers className="me-2" /> Registered Users
         </Link>
 
         {/* Category */}
-        <button
-        onClick={()=> toggleMenu('category')}
-          className="list-group-item list-group-action bg-dark text-white border-0 text-start"
-        >
-          <FaEdit className="me-2" />
-          Food Category
+        <button onClick={() => toggleMenu('category')} className="menu-item toggle">
+          <span><FaEdit className="me-2" /> Food Category</span>
+          {openMenus.category ? <FaChevronUp /> : <FaChevronDown />}
         </button>
-
-        {openMenus.category &&(
-
-        
-          <div className="ps-4">
-            <Link to="/admin/add-category" className="list-group-item list-group-action bg-dark text-white">
-              Add Category
-            </Link>
-            <Link to="/admin/manage-category" className="list-group-item list-group-action bg-dark text-white">
-              Manage Category
-            </Link>
-          </div>
-        )}
+        <div className={`submenu ${openMenus.category ? 'open' : ''}`}>
+          <Link to="/admin/add-category">Add Category</Link>
+          <Link to="/admin/manage-category">Manage Category</Link>
+        </div>
 
         {/* Food Item */}
-        <button
-          onClick={() => toggleMenu('food')}
-          className="list-group-item list-group-action bg-dark text-white border-0 text-start"
-        >
-          <FaEdit className="me-2" />
-          Food Item
+        <button onClick={() => toggleMenu('food')} className="menu-item toggle">
+          <span><FaEdit className="me-2" /> Food Item</span>
+          {openMenus.food ? <FaChevronUp /> : <FaChevronDown />}
         </button>
+        <div className={`submenu ${openMenus.food ? 'open' : ''}`}>
+          <Link to="/admin/add-food">Add Food Item</Link>
+          <Link to="/admin/manage-food">Manage Food Item</Link>
+        </div>
 
-        {openMenus.food && (
-          <div className="ps-4">
-            <Link to="/admin/add-food" className="list-group-item list-group-action bg-dark text-white">
-              Add Food Item
-            </Link>
-            <Link to="/admin/manage-food" className="list-group-item list-group-action bg-dark text-white">
-              Manage Food Item
-            </Link>
-          </div>
-        )}
+        {/* Orders */}
+        <button onClick={() => toggleMenu('orders')} className="menu-item toggle">
+          <span><FaList className="me-2" /> Orders</span>
+          {openMenus.orders ? <FaChevronUp /> : <FaChevronDown />}
+        </button>
+        <div className={`submenu ${openMenus.orders ? 'open' : ''}`}>
+          <Link to="/admin/orders/not-confirmed">Not Confirmed</Link>
+          <Link to="/admin/orders/confirmed">Confirmed</Link>
+          <Link to="/admin/orders/preparing">Being Prepared</Link>
+          <Link to="/admin/orders/pickup">Food Pickup</Link>
+          <Link to="/admin/orders/delivered">Delivered</Link>
+          <Link to="/admin/orders/cancelled">Cancelled</Link>
+          <Link to="/admin/orders/all">All Orders</Link>
+        </div>
 
-        <Link to="/admin/search" className="list-group-item list-group-action bg-dark text-white">
-          <FaSearch className="me-2" />
-          Search
+        <Link to="/admin/report" className="menu-item">
+          <FaFile className="me-2" /> B/W Dates Report
         </Link>
 
-        <Link to="/admin/reviews" className="list-group-item list-group-action bg-dark text-white">
-          <FaThLarge className="me-2" />
-          Manage Reviews
+        <Link to="/admin/search" className="menu-item">
+          <FaSearch className="me-2" /> Search
         </Link>
 
+        <Link to="/admin/reviews" className="menu-item">
+          <FaCommentAlt className="me-2" /> Manage Reviews
+        </Link>
       </div>
     </div>
   )

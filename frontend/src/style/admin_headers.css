@@ -1,0 +1,21 @@
+.navbar {
+  font-size: 0.95rem;
+}
+
+.navbar-brand {
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.navbar .btn {
+  transition: all 0.3s ease;
+}
+
+.navbar .btn:hover {
+  transform: scale(1.05);
+}
+
+.badge {
+  font-size: 0.7rem;
+  padding: 4px 6px;
+}

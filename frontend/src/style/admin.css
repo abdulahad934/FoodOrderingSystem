@@ -1,18 +1,76 @@
-.icon-fix{
-    position: relative;
-    top: -2px;
+.sidebar {
+  width: 250px;
+  min-height: 100vh;
+  background: #1e1e2f;
+  color: #fff;
+  transition: all 0.3s ease;
 }
 
-.sidebar{
-    
-    width: 250px;
-    height: 100vw;
-    top: 0;
-    left: 0;
-    position: fixed;
+.profile-card {
+  padding: 20px;
+  text-align: center;
+  border-bottom: 1px solid #333;
+}
+.profile-card img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 2px solid #007bff;
+}
+.profile-card h6 {
+  margin-top: 10px;
+  font-weight: bold;
+}
+.profile-card .role {
+  color: #aaa;
+  font-size: 0.85rem;
 }
 
-.list-group-item:hover{
-    background-color: #1a1a1a !important;
-    color: yellow !important;
+.menu-list {
+  display: flex;
+  flex-direction: column;
 }
+
+.menu-item {
+  background: transparent;
+  color: #ddd;
+  border: none;
+  padding: 12px 20px;
+  text-align: left;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background 0.3s ease, color 0.3s ease;
+  cursor: pointer;
+  text-decoration: none;
+}
+.menu-item:hover {
+  background: #2a2a40;
+  color: #fff;
+}
+.menu-item.toggle {
+  width: 100%;
+}
+
+.submenu {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  background: #252538;
+}
+.submenu.open {
+  max-height: 500px;
+}
+.submenu a {
+  display: block;
+  padding: 8px 30px;
+  color: #bbb;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+.submenu a:hover {
+  color: #fff;
+}
+
+
