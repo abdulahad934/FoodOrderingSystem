@@ -19,3 +19,11 @@
   font-size: 0.7rem;
   padding: 4px 6px;
 }
+
+.btn-sidebar {
+  border: 1px solid #333;   /* order: width → style → color */
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  transition: 0.4s ease;
+}

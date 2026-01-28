@@ -1,8 +1,8 @@
 import React, {useState} from 'react'
-import { FaBars, FaBell, FaSignOutAlt } from 'react-icons/fa'
+import { FaBars, FaBell, FaChevronCircleLeft, FaChevronCircleRight, FaSignOutAlt } from 'react-icons/fa'
 import { useNavigate} from 'react-router-dom'
 import '../style/admin_headers.css'
-const AdminHeader = () => {
+const AdminHeader = ({toggleSidebar, sidebarOpen}) => {
     const navigate = useNavigate();
 
     const handleLogout = () => {
@@ -12,6 +12,10 @@ const AdminHeader = () => {
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-white border-bottom px-4 py-3 shadow-sm">
+      
+      <button className='btn btn-outline-dark me-3 btn-sidebar' onClick={toggleSidebar}>
+        {sidebarOpen ? <FaChevronCircleLeft/> : <FaChevronCircleRight/>}
+      </button >
       {/* Brand */}
       <span className="navbar-brand fw-bold d-flex align-items-center">
         <i className="fas fa-utensils me-2 text-primary"></i>

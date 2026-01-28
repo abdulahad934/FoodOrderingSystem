@@ -52,7 +52,7 @@ const AdminSidebar = () => {
           {openMenus.category ? <FaChevronUp /> : <FaChevronDown />}
         </button>
         <div className={`submenu ${openMenus.category ? 'open' : ''}`}>
-          <Link to="/admin/add-category">Add Category</Link>
+          <Link to="/add-category">Add Category</Link>
           <Link to="/admin/manage-category">Manage Category</Link>
         </div>
 
