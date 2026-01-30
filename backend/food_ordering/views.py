@@ -121,3 +121,13 @@ def list_foods(request):
     foods = Food.objects.all()
     serializer = FoodItemSerializer(foods, many=True)
     return Response(serializer.data)
+
+
+
+@api_view(['GET'])
+
+def food_search(request):
+    query = request.GET.get('q', '')
+    foods = Food.objects.filter(item_name__icontains=query)
+    serializer = FoodItemSerializer(foods, many=True)
+    return Response(serializer.data)

@@ -98,7 +98,7 @@ const Home = () => {
                   </p>
 
                   {/* Search Form */}
-                  <form method="GET" action="/search" className="hero-search-form mb-4">
+                  <form method="GET" action="/search" name='q' className="hero-search-form mb-4">
                     <div className="search-wrapper">
                       <div className="search-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">

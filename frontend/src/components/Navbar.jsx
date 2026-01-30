@@ -46,7 +46,7 @@ const Navbar = () => {
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/admin">
+              <Link className="nav-link" to="/admin-login">
                 <FaUserShield className="me-1" /> Admin
               </Link>
             </li>
@@ -60,6 +60,7 @@ const Navbar = () => {
           </ul>
         </div>
       </div>
+      
     </nav>
   );
 };
