@@ -53,7 +53,7 @@ const AdminSidebar = () => {
         </button>
         <div className={`submenu ${openMenus.category ? 'open' : ''}`}>
           <Link to="/add-category">Add Category</Link>
-          <Link to="/admin/manage-category">Manage Category</Link>
+          <Link to="/manage-category">Manage Category</Link>
         </div>
 
         {/* Food Item */}
@@ -62,7 +62,7 @@ const AdminSidebar = () => {
           {openMenus.food ? <FaChevronUp /> : <FaChevronDown />}
         </button>
         <div className={`submenu ${openMenus.food ? 'open' : ''}`}>
-          <Link to="/admin/add-food">Add Food Item</Link>
+          <Link to="/add-food">Add Food Item</Link>
           <Link to="/admin/manage-food">Manage Food Item</Link>
         </div>
 

@@ -22,7 +22,7 @@ class Category(models.Model):
     
 
 class Food(models.Model):
-    cetagory = models.ForeignKey(Category, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
     item_name = models.CharField(max_length=50, blank=True, null=True)
     item_price = models.DecimalField(max_digits=10,decimal_places=1)
     item_description = models.TextField(max_length=500, blank=True, null=True)

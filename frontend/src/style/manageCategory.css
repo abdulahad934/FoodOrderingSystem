@@ -1,0 +1,15 @@
+.card {
+  border-radius: 12px;
+}
+
+.table th, .table td {
+  vertical-align: middle;
+}
+
+.btn {
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  transform: scale(1.05);
+}

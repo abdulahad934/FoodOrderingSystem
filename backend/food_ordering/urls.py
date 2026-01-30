@@ -3,5 +3,7 @@ from .views import *
 
 urlpatterns = [
     path('admin-login/', admin_login_api),
-    path('add-category/', add_category)
+    path('add-category/', add_category),
+    path('categories/', list_categories),
+    path("add-food-item/", add_food_item),
 ]
