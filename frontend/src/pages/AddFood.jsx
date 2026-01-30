@@ -16,7 +16,6 @@ const AddFood = () => {
     item_quantity: '',
   });
 
-  // Fetch categories on component mount
   useEffect(() => {
     fetchCategories();
   }, []);
@@ -44,13 +43,11 @@ const AddFood = () => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         toast.error('Image size should be less than 5MB');
         return;
       }
 
-      // Validate file type
       if (!file.type.startsWith('image/')) {
         toast.error('Please select a valid image file');
         return;
@@ -61,7 +58,6 @@ const AddFood = () => {
         image: file,
       }));
 
-      // Create image preview
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result);
@@ -108,14 +104,12 @@ const AddFood = () => {
       item_quantity: '',
     });
     setImagePreview(null);
-    // Reset file input
     const fileInput = document.querySelector('input[type="file"]');
     if (fileInput) fileInput.value = '';
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!validateForm()) return;
 
     setLoading(true);
@@ -153,7 +147,6 @@ const AddFood = () => {
   return (
     <AdminLayout>
       <div className="row">
-        {/* Left column: Add Food Form */}
         <div className="col-md-8">
           <div className="card shadow-sm border-0">
             <div className="card-body p-4">
@@ -291,7 +284,6 @@ const AddFood = () => {
           </div>
         </div>
 
-        {/* Right column: Image Preview */}
         <div className="col-md-4">
           <div className="card shadow-sm border-0 h-100">
             <div className="card-body d-flex flex-column justify-content-center align-items-center">
@@ -314,7 +306,6 @@ const AddFood = () => {
         </div>
       </div>
 
-      {/* Toast notifications */}
       <ToastContainer position="top-center" autoClose={3000} />
     </AdminLayout>
   );

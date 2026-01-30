@@ -1,15 +1,18 @@
+# views.py - MINIMAL VERSION (Only for Add Food functionality)
+
 from django.shortcuts import render
 from rest_framework.decorators import api_view, parser_classes
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.contrib.auth import authenticate
 from rest_framework.response import Response
 from rest_framework import status
-from .models import *
-from .serializers import *
+from .models import Category, Food
+from .serializers import CategorySerializer, FoodItemSerializer
 
 
 @api_view(['POST'])
 def admin_login_api(request):
+    """Admin login"""
     username = request.data.get('username')
     password = request.data.get('password')
 
@@ -22,6 +25,7 @@ def admin_login_api(request):
 
 @api_view(['POST'])
 def add_category(request):
+    """Add new category"""
     category_name = request.data.get('category_name')
 
     if not category_name:
@@ -33,6 +37,7 @@ def add_category(request):
 
 @api_view(['GET'])
 def list_categories(request):
+    """Get all categories (for dropdown)"""
     categories = Category.objects.all()
     serializer = CategorySerializer(categories, many=True)
     return Response(serializer.data)
@@ -41,12 +46,8 @@ def list_categories(request):
 @api_view(['POST'])
 @parser_classes([MultiPartParser, FormParser])
 def add_food_item(request):
-    """
-    Add a new food item
-    POST /api/add-food-item/
-    """
+    """Add a new food item"""
     try:
-        # Get data from request
         category_id = request.data.get('category')
         item_name = request.data.get('item_name')
         item_description = request.data.get('item_description')
@@ -61,7 +62,7 @@ def add_food_item(request):
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-        # Check if category exists
+        # Check category exists
         try:
             category = Category.objects.get(id=category_id)
         except Category.DoesNotExist:
@@ -94,7 +95,7 @@ def add_food_item(request):
             image=image
         )
         
-        # Serialize and return response
+        # Return response
         serializer = FoodItemSerializer(food_item, context={'request': request})
         
         return Response(
@@ -112,83 +113,4 @@ def add_food_item(request):
                 "error": str(e)
             },
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
-        )
-
-
-@api_view(['GET'])
-def list_food_items(request):
-    """Get all food items with optional category filter"""
-    category_id = request.query_params.get('category')
-    
-    if category_id:
-        food_items = Food.objects.filter(category_id=category_id).select_related('category')
-    else:
-        food_items = Food.objects.all().select_related('category')
-    
-    serializer = FoodItemSerializer(food_items, many=True, context={'request': request})
-    return Response(serializer.data)
-
-
-@api_view(['GET'])
-def get_food_item(request, pk):
-    """Get a single food item by ID"""
-    try:
-        food_item = Food.objects.get(pk=pk)
-        serializer = FoodItemSerializer(food_item, context={'request': request})
-        return Response(serializer.data)
-    except Food.DoesNotExist:
-        return Response(
-            {"message": "Food item not found"},
-            status=status.HTTP_404_NOT_FOUND
-        )
-
-
-@api_view(['PUT'])
-@parser_classes([MultiPartParser, FormParser])
-def update_food_item(request, pk):
-    """Update a food item"""
-    try:
-        food_item = Food.objects.get(pk=pk)
-    except Food.DoesNotExist:
-        return Response(
-            {"message": "Food item not found"},
-            status=status.HTTP_404_NOT_FOUND
-        )
-    
-    serializer = FoodItemCreateSerializer(food_item, data=request.data, partial=True)
-    
-    if serializer.is_valid():
-        serializer.save()
-        response_serializer = FoodItemSerializer(food_item, context={'request': request})
-        return Response(
-            {
-                "message": "Food item updated successfully",
-                "data": response_serializer.data
-            },
-            status=status.HTTP_200_OK
-        )
-    
-    return Response(
-        {
-            "message": "Validation failed",
-            "errors": serializer.errors
-        },
-        status=status.HTTP_400_BAD_REQUEST
-    )
-
-
-@api_view(['DELETE'])
-def delete_food_item(request, pk):
-    """Delete a food item"""
-    try:
-        food_item = Food.objects.get(pk=pk)
-        food_item.delete()
-        return Response(
-            {"message": "Food item deleted successfully"},
-            status=status.HTTP_204_NO_CONTENT
-        )
-    except Food.DoesNotExist:
-        return Response(
-            {"message": "Food item not found"},
-            status=status.HTTP_404_NOT_FOUND
         )
