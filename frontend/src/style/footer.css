@@ -1,0 +1,19 @@
+.footer-link {
+  color: #ccc;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.footer-link:hover {
+  color: #0d6efd;
+}
+
+.footer-social {
+  color: #ccc;
+  font-size: 1.2rem;
+  transition: 0.3s;
+}
+
+.footer-social:hover {
+  color: #0d6efd;
+}

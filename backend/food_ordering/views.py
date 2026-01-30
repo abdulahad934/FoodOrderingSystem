@@ -114,3 +114,10 @@ def add_food_item(request):
             },
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
+
+@api_view(['GET'])
+def list_foods(request):
+    """Get all categories (for dropdown)"""
+    foods = Food.objects.all()
+    serializer = FoodItemSerializer(foods, many=True)
+    return Response(serializer.data)

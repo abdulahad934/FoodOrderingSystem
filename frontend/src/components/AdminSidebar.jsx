@@ -63,7 +63,7 @@ const AdminSidebar = () => {
         </button>
         <div className={`submenu ${openMenus.food ? 'open' : ''}`}>
           <Link to="/add-food">Add Food Item</Link>
-          <Link to="/admin/manage-food">Manage Food Item</Link>
+          <Link to="/manage-food">Manage Food Item</Link>
         </div>
 
         {/* Orders */}

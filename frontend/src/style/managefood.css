@@ -1,0 +1,25 @@
+.card {
+  border-radius: 12px;
+}
+
+.card-header {
+  border-radius: 12px 12px 0 0;
+}
+
+.table th, .table td {
+  vertical-align: middle;
+}
+
+.btn-outline-primary{
+  background-color: #0d6efd;
+  color: white;
+}
+
+.btn-outline-danger {
+  background-color: #dc3545;
+  color: white;
+}
+
+.table-hover tbody tr:hover {
+  background-color: #f8f9fa;
+}

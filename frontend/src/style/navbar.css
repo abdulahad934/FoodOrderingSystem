@@ -1,0 +1,27 @@
+body {
+  padding-top: 70px; /* prevent navbar overlap */
+}
+
+.navbar-brand {
+  font-size: 1.4rem;
+  letter-spacing: 0.5px;
+}
+
+.nav-link {
+  font-weight: 500;
+  margin-right: 15px;
+  transition: color 0.3s;
+}
+
+.nav-link:hover {
+  color: #0d6efd !important;
+}
+
+.btn-primary {
+  border-radius: 8px;
+  transition: 0.3s;
+}
+
+.btn-primary:hover {
+  background-color: #084298;
+}

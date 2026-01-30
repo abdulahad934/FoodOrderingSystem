@@ -41,3 +41,5 @@ class FoodItemSerializer(serializers.ModelSerializer):
         if obj.image and request:
             return request.build_absolute_uri(obj.image.url)
         return None
+    
+
