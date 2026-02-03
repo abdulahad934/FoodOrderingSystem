@@ -9,4 +9,5 @@ urlpatterns = [
     path("add-food-item/", add_food_item),
     path("food_search/", food_search),
     path("random_foods/", random_foods),
+    path("register/", register_User),
 ]
