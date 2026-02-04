@@ -158,3 +158,36 @@ def register_User(request):
         return Response({"message": "Email or mobile already registered"}, status=400)
     User.objects.create(first_name = first_name, last_name = last_name, phone_number = phone_number, email=email, password = make_password(password))
     return Response({"message": "User register successfully"}, status=201)
+
+
+from django.db.models import Q
+from django.contrib.auth.hashers import check_password
+
+@api_view(['POST'])
+def user_login(request):
+    identifier = request.data.get('identifier')
+    password = request.data.get('password')
+
+    try:
+        user = User.objects.get(Q(email=identifier) | Q(phone_number=identifier))
+        if check_password(password, user.password):
+            return Response(
+                {
+                    "message": "Login Succesfull",
+                    "userId": user.id,
+                    "userName": f"{user.first_name} {user.last_name}"
+                },
+                status=200
+            )
+        else:
+            return Response({"message": "Invalid Credentials"}, status=401)
+    except:
+        return Response({"message": "Invalid Credentials"}, status=401)
+
+
+
+ 
+
+
+
+    

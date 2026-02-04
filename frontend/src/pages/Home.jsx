@@ -1,11 +1,14 @@
 import React, {useState, useEffect} from 'react';
 import PublicLayout from '../components/PublicLayout';
 import '../style/home.css';
-import { data, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const Home = () => {
   const [foods, setFoods] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+ 
+
+ 
   
   useEffect(()=> {
     fetch('http://127.0.0.1:1000/api/random_foods')
@@ -102,7 +105,7 @@ const Home = () => {
                   {/* Badge */}
                   <div className="hero-badge mb-3">
                     <span className="badge-icon">🔥</span>
-                    <span className="badge-text">Fast Delivery</span>
+                    <span className="badge-text">Fast Delivery </span>
                   </div>
 
                   {/* Main Heading */}
