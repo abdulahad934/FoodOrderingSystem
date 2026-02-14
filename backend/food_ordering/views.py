@@ -1,4 +1,4 @@
-# views.py - MINIMAL VERSION (Only for Add Food functionality)
+
 
 from django.shortcuts import render
 from rest_framework.decorators import api_view, parser_classes
@@ -13,7 +13,7 @@ from django.contrib.auth.hashers import make_password
 
 @api_view(['POST'])
 def admin_login_api(request):
-    """Admin login"""
+   
     username = request.data.get('username')
     password = request.data.get('password')
 
@@ -47,7 +47,7 @@ def list_categories(request):
 @api_view(['POST'])
 @parser_classes([MultiPartParser, FormParser])
 def add_food_item(request):
-    """Add a new food item"""
+    
     try:
         category_id = request.data.get('category')
         item_name = request.data.get('item_name')
@@ -56,14 +56,14 @@ def add_food_item(request):
         item_quantity = request.data.get('item_quantity')
         image = request.FILES.get('image')
         
-        # Validation
+    
         if not all([category_id, item_name, item_description, item_price, item_quantity]):
             return Response(
                 {"message": "All fields are required"},
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-        # Check category exists
+        
         try:
             category = Category.objects.get(id=category_id)
         except Category.DoesNotExist:
@@ -72,7 +72,7 @@ def add_food_item(request):
                 status=status.HTTP_404_NOT_FOUND
             )
         
-        # Validate price
+        
         try:
             price = float(item_price)
             if price <= 0:
@@ -86,7 +86,7 @@ def add_food_item(request):
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-        # Create food item
+      
         food_item = Food.objects.create(
             category=category,
             item_name=item_name.strip(),
@@ -95,8 +95,7 @@ def add_food_item(request):
             item_quantity=item_quantity.strip(),
             image=image
         )
-        
-        # Return response
+       
         serializer = FoodItemSerializer(food_item, context={'request': request})
         
         return Response(
@@ -118,7 +117,7 @@ def add_food_item(request):
 
 @api_view(['GET'])
 def list_foods(request):
-    """Get all categories (for dropdown)"""
+    
     foods = Food.objects.all()
     serializer = FoodItemSerializer(foods, many=True)
     return Response(serializer.data)
@@ -193,13 +192,43 @@ from django.shortcuts import get_object_or_404
 
 @api_view(['GET'])
 def food_detail(request, id):
-    """
-    Get single food item by ID
-    Returns 404 if not found
-    """
+ 
     food = get_object_or_404(Food, id=id)
     serializer = FoodItemSerializer(food)
     return Response(serializer.data)
 
 
-    
+
+@api_view(['POST'])
+def add_to_cart(request):
+    user_id = request.data.get('userId')
+    food_id = request.data.get('foodId')
+
+    if not user_id or not food_id:
+        return Response({"message": "User ID and Food ID are required"}, status=400)
+
+    try:
+        user = User.objects.get(id=user_id)
+        food = Food.objects.get(id=food_id)
+
+        order, created = Order.objects.get_or_create(
+            user=user,
+            food=food,
+            is_order_placed=False,
+            defaults={'quantity': 1} 
+        )
+        
+        if not created:
+            order.quantity += 1
+            order.save()
+            return Response({"message": "Item quantity updated in cart"}, status=200)
+        
+        return Response({"message": "Food added to cart successfully"}, status=201)
+        
+    except User.DoesNotExist:
+        return Response({"message": "User not found"}, status=404)
+    except Food.DoesNotExist:
+        return Response({"message": "Food item not found"}, status=404)
+    except Exception as e:
+        print(f"Error in add_to_cart: {str(e)}")  
+        return Response({"message": "Something went wrong", "error": str(e)}, status=500)

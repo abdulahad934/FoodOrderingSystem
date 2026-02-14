@@ -35,4 +35,16 @@ class Food(models.Model):
         return f"{self.item_name} ({self.item_quantity})"
     
 
-class 
+class Order(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
+    food = models.ForeignKey(Food, on_delete=models.CASCADE, related_name='orders')
+    is_order_placed = models.BooleanField(default=False)
+    quantity = models.PositiveIntegerField(default=1)
+    order_number = models.CharField(max_length=100, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True) 
+    updated_at = models.DateTimeField(auto_now=True)  
+
+    
+
+    def __str__(self):
+        return f"Order #{self.order_number or self.id} - {self.quantity}"

@@ -40,7 +40,7 @@ const FoodDetail = () => {
     }
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async() => {
     const userId = localStorage.getItem('userId');
     if (!userId) {
       toast.error('Please login to add items to cart');
@@ -48,8 +48,30 @@ const FoodDetail = () => {
       return;
     }
 
-    // Add to cart logic here
-    toast.success('Added to cart successfully!');
+    try{
+        const response = await fetch('http://127.0.0.1:1000/api/cart/add/',{
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                userId: userId,
+                foodId: food.id
+            })
+        });
+        const data = await response.json();
+        if(response.status === 200){
+            toast.success(data.message || "Item added to cart");
+            setTimeout(() => {
+                navigate('/cart');
+            }, 2000);
+        }
+        else {
+            toast.error(data.message || "Something went wrong");
+        }
+    }
+    catch(error) {
+        console.error(error);
+        toast.error("Error connecting to server")
+    }
   };
 
   const handleAddToWishlist = () => {
