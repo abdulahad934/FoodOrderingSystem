@@ -8,7 +8,9 @@ import AddFood from './pages/AddFood';
 import ManageFood from './pages/ManageFood';
 import SearchPage from './pages/SearchPage';
 import Register from './components/Register';
-import Login from './components/Login'
+import Login from './components/Login';
+
+import FoodDetail from './pages/FoodDetail';
 
 
 function App() {
@@ -24,7 +26,8 @@ function App() {
         <Route path='/manage-food' element = {<ManageFood/>}></Route>
         <Route path='/search' element={<SearchPage/>}/>
         <Route path='/register' element= {<Register/>}/>
-        <Route path='/login' element= {<Login/>}/>
+        <Route path="/food/:id" element={<FoodDetail />} />  
+        <Route path="/login" element={<Login />} />  
       </Routes>
       
 
