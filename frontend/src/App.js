@@ -11,6 +11,7 @@ import Register from './components/Register';
 import Login from './components/Login';
 
 import FoodDetail from './pages/FoodDetail';
+import Cart from './pages/Cart';
 
 
 function App() {
@@ -27,7 +28,8 @@ function App() {
         <Route path='/search' element={<SearchPage/>}/>
         <Route path='/register' element= {<Register/>}/>
         <Route path="/food/:id" element={<FoodDetail />} />  
-        <Route path="/login" element={<Login />} />  
+        <Route path="/login" element={<Login />} />
+        <Route path="/cart" element={<Cart />} />
       </Routes>
       
 

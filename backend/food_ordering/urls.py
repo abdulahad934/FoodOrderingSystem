@@ -9,6 +9,7 @@ urlpatterns = [
     path('foods/', list_foods),
     path('foods/<int:id>/', food_detail), 
     path('food/<int:id>/', food_detail),
+    path("cart/<int:user_id>/", get_cart_items),
     path('cart/add/', add_to_cart),   
     path("add-food-item/", add_food_item),
     path("food_search/", food_search),

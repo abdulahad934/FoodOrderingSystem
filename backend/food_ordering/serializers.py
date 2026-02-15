@@ -1,7 +1,7 @@
 # serializers.py - MINIMAL VERSION (Only for Add Food functionality)
 
 from rest_framework import serializers
-from .models import Category, Food
+from .models import Category, Food, Order
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -41,5 +41,13 @@ class FoodItemSerializer(serializers.ModelSerializer):
         if obj.image and request:
             return request.build_absolute_uri(obj.image.url)
         return None
+    
+
+
+class CartOrderSerializer(serializers.ModelSerializer):
+    food = FoodItemSerializer()
+    class Meta:
+        model = Order
+        fields = ['id', 'food', 'quantity']
     
 

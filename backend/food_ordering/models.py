@@ -48,3 +48,6 @@ class Order(models.Model):
 
     def __str__(self):
         return f"Order #{self.order_number or self.id} - {self.quantity}"
+    
+
+# class Order(models.Model):

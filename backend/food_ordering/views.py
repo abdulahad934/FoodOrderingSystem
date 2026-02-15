@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate
 from rest_framework.response import Response
 from rest_framework import status
 from .models import *
-from .serializers import CategorySerializer, FoodItemSerializer
+from .serializers import *
 from django.contrib.auth.hashers import make_password
 
 
@@ -232,3 +232,12 @@ def add_to_cart(request):
     except Exception as e:
         print(f"Error in add_to_cart: {str(e)}")  
         return Response({"message": "Something went wrong", "error": str(e)}, status=500)
+    
+
+
+
+@api_view(['GET'])
+def get_cart_items(request, user_id):
+    orders = Order.objects.filter(user_id=user_id, is_order_placed=False).select_related('food')
+    serializer = CartOrderSerializer(orders, many=True)
+    return Response(serializer.data)
