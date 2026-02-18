@@ -9,6 +9,8 @@ from rest_framework import status
 from .models import *
 from .serializers import *
 from django.contrib.auth.hashers import make_password
+from django.db import transaction
+
 
 
 @api_view(['POST'])
@@ -241,3 +243,87 @@ def get_cart_items(request, user_id):
     orders = Order.objects.filter(user_id=user_id, is_order_placed=False).select_related('food')
     serializer = CartOrderSerializer(orders, many=True)
     return Response(serializer.data)
+
+
+def make_unique_order_number():
+    while True:
+        number = str(random.randint(100000000, 999999999))
+        if not OrderAddress.objects.filter(order_number=number).exists():
+            return number
+
+
+@api_view(['POST'])
+def place_order(request):
+    try:
+        user_id = request.data.get('userId')
+        address = request.data.get('address')
+        payment_mode = request.data.get('paymentMode') or request.data.get('payment_mode')
+        card_number = request.data.get('cardNumber') or request.data.get('card_number')
+        expiry = request.data.get('expiry') or request.data.get('expiry_date')
+        cvv = request.data.get('cvv')
+
+        if not user_id:
+            return Response({"message": "User ID is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not address or not address.strip():
+            return Response({"message": "Delivery address is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if payment_mode not in ['cod', 'online']:
+            return Response({"message": "Invalid payment method"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if payment_mode == 'online':
+            if not all([card_number, expiry, cvv]):
+                return Response(
+                    {"message": "All card details are required for online payment"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            if len(cvv) < 3:
+                return Response(
+                    {"message": "Invalid CVV"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+        user = get_object_or_404(User, id=user_id)
+
+        pending_orders = Order.objects.filter(user=user, is_order_placed=False)
+
+        if not pending_orders.exists():
+            return Response(
+                {"message": "Your cart is empty"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        with transaction.atomic():
+            order_number = make_unique_order_number()
+
+            pending_orders.update(
+                order_number=order_number,
+                is_order_placed=True
+            )
+
+            OrderAddress.objects.create(
+                user=user,
+                order_number=order_number,
+                address=address
+            )
+
+            PaymentDetail.objects.create(
+                user=user,
+                order_number=order_number,
+                payment_mode=payment_mode,
+                card_number=card_number if payment_mode == 'online' else None,
+                expiry_date=expiry if payment_mode == 'online' else None,
+                cvv=cvv if payment_mode == 'online' else None,
+            )
+
+        return Response(
+            {"message": f"Order placed successfully! Order No: {order_number}"},
+            status=status.HTTP_201_CREATED
+        )
+
+    except Exception:
+        return Response(
+            {"message": "Something went wrong while placing order"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )

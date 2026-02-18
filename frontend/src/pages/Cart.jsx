@@ -192,8 +192,8 @@ const Cart = () => {
                     <span className="total-amount">৳{(grandTotal + 50 + grandTotal * 0.05).toFixed(2)}</span>
                   </div>
 
-                  <button className="checkout-btn" onClick={() => navigate('/checkout')}>
-                    Proceed to Checkout
+                  <button className="checkout-btn" onClick={() => navigate('/payment')}>
+                    Proceed to payment
                   </button>
 
                   <div className="promo-section">
