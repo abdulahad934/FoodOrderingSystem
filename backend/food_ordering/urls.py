@@ -17,5 +17,10 @@ urlpatterns = [
     path("register/", register_User),
     path("login/", user_login),
     path("place_order/", place_order),
+    path("orders/<int:user_id>/", user_orders),
+
+    path('orders/by_order_number/<str:order_number>/', get_order_by_number),
+    path('order-address/<str:order_number>/', get_order_address),
+    path('payment-details/<str:order_number>/', get_payment_details),
     
 ]

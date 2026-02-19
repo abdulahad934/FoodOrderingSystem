@@ -1,7 +1,7 @@
 # serializers.py - MINIMAL VERSION (Only for Add Food functionality)
 
 from rest_framework import serializers
-from .models import Category, Food, Order
+from .models import *
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -49,5 +49,16 @@ class CartOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ['id', 'food', 'quantity']
+
+
+class MyOrdersListSerializer(serializers.ModelSerializer):
+    order_final_status = serializers.SerializerMethodField()
+    class Meta:
+        model = OrderAddress
+        fields = ['order_number', 'order_time', 'order_final_status']
+
+    
+    def get_order_final_status(self, obj):
+        return obj.order_final_status or "Waiting for Restaurant confirmation"
     
 

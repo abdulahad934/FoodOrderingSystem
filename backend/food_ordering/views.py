@@ -327,3 +327,161 @@ def place_order(request):
             {"message": "Something went wrong while placing order"},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
+    
+
+@api_view(['GET'])
+def user_orders(request, user_id):
+    """
+    Get all orders for a specific user with complete details
+    """
+    try:
+        user = get_object_or_404(User, id=user_id)
+        
+        # Get all unique order numbers for this user
+        order_addresses = OrderAddress.objects.filter(
+            user=user
+        ).order_by('-order_time')
+        
+        orders_list = []
+        
+        for order_address in order_addresses:
+            order_number = order_address.order_number
+            
+         
+            order_items = Order.objects.filter(
+                user=user,
+                order_number=order_number,
+                is_order_placed=True
+            ).select_related('food')
+            
+            
+            total_amount = sum(
+                float(item.food.item_price) * item.quantity 
+                for item in order_items
+            )
+            
+          
+            payment = PaymentDetail.objects.filter(
+                order_number=order_number
+            ).first()
+            
+          
+            items_data = []
+            for item in order_items:
+                items_data.append({
+                    'id': item.id,
+                    'food': {
+                        'id': item.food.id,
+                        'item_name': item.food.item_name,
+                        'item_price': float(item.food.item_price),
+                        'image': item.food.image.url if item.food.image else None
+                    },
+                    'quantity': item.quantity
+                })
+            
+         
+            order_data = {
+                'id': order_address.id,
+                'order_number': order_number,
+                'created_at': order_address.order_time.isoformat(),
+                'status': order_address.order_final_status or 'processing',
+                'address': order_address.address,
+                'payment_mode': payment.payment_mode if payment else 'cod',
+                'items': items_data,
+                'total_amount': round(total_amount, 2)
+            }
+            
+            orders_list.append(order_data)
+        
+        return Response(orders_list, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        print(f"Error in user_orders: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return Response(
+            {"message": f"Error loading orders: {str(e)}"}, 
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+    
+
+
+@api_view(['GET'])
+def get_order_by_number(request, order_number):
+    """Get order items by order number"""
+    try:
+        orders = Order.objects.filter(
+            order_number=order_number,
+            is_order_placed=True
+        ).select_related('food')
+        
+        serializer = CartOrderSerializer(orders, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return Response(
+            {"message": "Failed to load order items"}, 
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@api_view(['GET'])
+def get_order_address(request, order_number):
+    """Get order address by order number"""
+    try:
+        order_address = OrderAddress.objects.filter(
+            order_number=order_number
+        ).first()
+        
+        if not order_address:
+            return Response(
+                {"message": "Address not found"}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        data = {
+            'order_number': order_address.order_number,
+            'address': order_address.address,
+            'order_time': order_address.order_time,
+            'order_final_status': order_address.order_final_status or 'processing'
+        }
+        
+        return Response(data, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return Response(
+            {"message": "Failed to load address"}, 
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@api_view(['GET'])
+def get_payment_details(request, order_number):
+    """Get payment details by order number"""
+    try:
+        payment = PaymentDetail.objects.filter(
+            order_number=order_number
+        ).first()
+        
+        if not payment:
+            return Response(
+                {"message": "Payment details not found"}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        data = {
+            'order_number': payment.order_number,
+            'payment_mode': payment.payment_mode,
+            'payment_date': payment.payment_date
+        }
+        
+        return Response(data, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return Response(
+            {"message": "Failed to load payment details"}, 
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
