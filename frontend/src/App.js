@@ -16,6 +16,14 @@ import PaymentPage from './pages/PaymentPage';
 import MyOrders from './pages/MyOrders';
 import OrderDetails from './pages/OrderDetails';
 import ProfilePage from './pages/ProfilePage';
+import ChangePassword from './pages/ChangePassword';
+import OrdersNotConfirmed from './pages/OrdersNotConfirmed';
+import AllOrders from './pages/AllOrders';
+import OrderCancelled from './pages/OrderCancelled';
+import FoodPickup from './pages/FoodPickup';
+import Delivered from './pages/Delivered';
+import BeingPrepared from './pages/BeingPrepared';
+import Confirmed from './pages/Confirmed';
 
 
 function App() {
@@ -29,6 +37,7 @@ function App() {
         <Route path='/manage-category' element = {<ManageCategory/>}/>
         <Route path='/add-food' element = {<AddFood/>} />
         <Route path='/manage-food' element = {<ManageFood/>}></Route>
+        <Route path='/order-not-confirmed' element = {<OrdersNotConfirmed/>}></Route>
         <Route path='/search' element={<SearchPage/>}/>
         <Route path='/register' element= {<Register/>}/>
         <Route path="/food/:id" element={<FoodDetail />} />  
@@ -38,6 +47,13 @@ function App() {
         <Route path='/my-orders' element={<MyOrders/>}/>
         <Route path='/order-details/:order_number' element={<OrderDetails/>}/>
         <Route path='/profile' element={<ProfilePage/>}/>
+        <Route path='/changepassword' element={<ChangePassword/>}/>
+        <Route path='/all-orders' element={<AllOrders/>}/>
+        <Route path='/order-cancelled' element={<OrderCancelled/>}/>
+        <Route path='/food-pickup' element={<FoodPickup/>}/>
+        <Route path='/delivered' element={<Delivered/>}/>
+        <Route path='/being-prepared' element={<BeingPrepared/>}/>
+        <Route path='/confirmed' element={<Confirmed/>}/>
       </Routes>
       
 

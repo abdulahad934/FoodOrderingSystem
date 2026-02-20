@@ -72,13 +72,13 @@ const AdminSidebar = () => {
           {openMenus.orders ? <FaChevronUp /> : <FaChevronDown />}
         </button>
         <div className={`submenu ${openMenus.orders ? 'open' : ''}`}>
-          <Link to="/admin/orders/not-confirmed">Not Confirmed</Link>
-          <Link to="/admin/orders/confirmed">Confirmed</Link>
-          <Link to="/admin/orders/preparing">Being Prepared</Link>
-          <Link to="/admin/orders/pickup">Food Pickup</Link>
-          <Link to="/admin/orders/delivered">Delivered</Link>
-          <Link to="/admin/orders/cancelled">Cancelled</Link>
-          <Link to="/admin/orders/all">All Orders</Link>
+          <Link to="/order-not-confirmed">Not Confirmed</Link>
+          <Link to="/confirmed">Confirmed</Link>
+          <Link to="/being-prepared">Being Prepared</Link>
+          <Link to="/food-pickup">Food Pickup</Link>
+          <Link to="/delivered">Delivered</Link>
+          <Link to="/order-cancelled">Cancelled</Link>
+          <Link to="/all-orders">All Orders</Link>
         </div>
 
         <Link to="/admin/report" className="menu-item">

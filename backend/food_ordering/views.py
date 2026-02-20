@@ -574,3 +574,282 @@ def update_user_profile(request, user_id):
             {"message": "Failed to update profile"}, 
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
+    
+
+
+@api_view(['POST'])
+def change_password(request, user_id):
+    """
+    Change user password
+    """
+    try:
+        user = get_object_or_404(User, id=user_id)
+        
+        current_password = request.data.get('current_password')
+        new_password = request.data.get('new_password')
+        
+        if not current_password or not new_password:
+            return Response(
+                {"message": "Both current and new password are required"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Verify current password
+        if not check_password(current_password, user.password):
+            return Response(
+                {"message": "Current password is incorrect"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Validate new password
+        if len(new_password) < 8:
+            return Response(
+                {"message": "New password must be at least 8 characters"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Update password
+        user.password = make_password(new_password)
+        user.save()
+        
+        return Response(
+            {"message": "Password changed successfully"}, 
+            status=status.HTTP_200_OK
+        )
+        
+    except Exception as e:
+        print(f"Error in change_password: {str(e)}")
+        return Response(
+            {"message": "Failed to change password"}, 
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+
+PENDING_STATUSES = {None, '', 'pending'}
+
+def normalize_status(raw_status):
+    """Return a clean, consistent status string."""
+    if raw_status in PENDING_STATUSES:
+        return 'pending'
+    return raw_status
+
+
+# ─────────────────────────────────────────────
+#  Shared helper
+# ─────────────────────────────────────────────
+
+def _build_orders_list(status_filter=None):
+    """
+    Build order list filtered by status.
+    status_filter: str | list | None
+        None  → return all orders
+        str   → return orders matching that status
+        list  → return orders whose status is in the list
+    """
+    order_numbers = (
+        Order.objects
+        .filter(is_order_placed=True, order_number__isnull=False)
+        .values_list('order_number', flat=True)
+        .distinct()
+    )
+
+    orders_list = []
+
+    for order_number in order_numbers:
+        order_address = OrderAddress.objects.filter(order_number=order_number).first()
+        current_status = normalize_status(
+            order_address.order_final_status if order_address else None
+        )
+
+        # Apply filter
+        if status_filter is not None:
+            allowed = [status_filter] if isinstance(status_filter, str) else list(status_filter)
+            if current_status not in allowed:
+                continue
+
+        order_items = (
+            Order.objects
+            .filter(order_number=order_number, is_order_placed=True)
+            .select_related('food', 'user')
+        )
+
+        if not order_items.exists():
+            continue
+
+        user = order_items.first().user
+        payment = PaymentDetail.objects.filter(order_number=order_number).first()
+        total_amount = sum(
+            float(item.food.item_price) * item.quantity
+            for item in order_items
+        )
+
+        orders_list.append({
+            'id':             order_address.id if order_address else None,
+            'order_number':   order_number,
+            'customer_name':  f"{user.first_name} {user.last_name}" if user else 'N/A',
+            'customer_email': user.email        if user else 'N/A',
+            'customer_phone': user.phone_number if user else 'N/A',
+            'address':        order_address.address    if order_address else 'No address',
+            'status':         current_status,
+            'created_at':     order_address.order_time if order_address else None,
+            'item_count':     order_items.count(),
+            'total_amount':   round(total_amount, 2),
+            'payment_mode':   payment.payment_mode if payment else 'cod',
+        })
+
+    orders_list.sort(key=lambda x: x['created_at'] or '', reverse=True)
+    return orders_list
+
+
+def _orders_response(status_filter=None):
+    try:
+        data = _build_orders_list(status_filter=status_filter)
+        return Response(data, status=status.HTTP_200_OK)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return Response(
+            {'message': f'Failed to load orders: {str(e)}'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+
+# ─────────────────────────────────────────────
+#  GET endpoints
+# ─────────────────────────────────────────────
+
+@api_view(['GET'])
+def get_orders_not_confirmed(request):
+    """Pending orders — status is NULL, '', or 'pending'."""
+    return _orders_response(status_filter='pending')
+
+
+@api_view(['GET'])
+def orders_confirmed(request):
+    return _orders_response(status_filter='confirmed')
+
+
+@api_view(['GET'])
+def food_being_prepared(request):
+    return _orders_response(status_filter='preparing')
+
+
+@api_view(['GET'])
+def food_pickup(request):
+    return _orders_response(status_filter='out_for_delivery')
+
+
+@api_view(['GET'])
+def food_delivered(request):
+    return _orders_response(status_filter='delivered')
+
+
+@api_view(['GET'])
+def order_cancelled(request):
+    return _orders_response(status_filter='cancelled')
+
+
+@api_view(['GET'])
+def all_orders(request):
+    """All orders. Optional ?status=pending,confirmed,... query param."""
+    status_param = request.query_params.get('status')
+    if status_param:
+        filter_list = [s.strip() for s in status_param.split(',')]
+        return _orders_response(status_filter=filter_list)
+    return _orders_response()
+
+
+# ─────────────────────────────────────────────
+#  Action endpoints (Confirm / Reject)
+# ─────────────────────────────────────────────
+
+@api_view(['PUT'])
+def confirm_order(request, order_number):
+    """
+    Confirm a pending order.
+    PUT /api/orders/confirm/<order_number>/
+    """
+    try:
+        order_address = OrderAddress.objects.filter(order_number=order_number).first()
+
+        if not order_address:
+            return Response(
+                {'message': 'Order not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        current = normalize_status(order_address.order_final_status)
+        if current != 'pending':
+            return Response(
+                {'message': f'Order is already "{current}", cannot confirm.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        order_address.order_final_status = 'confirmed'
+        order_address.save()
+
+        return Response(
+            {'message': 'Order confirmed successfully', 'order_number': order_number},
+            status=status.HTTP_200_OK
+        )
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return Response(
+            {'message': f'Failed to confirm order: {str(e)}'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@api_view(['PUT'])
+def reject_order(request, order_number):
+    """
+    Reject / cancel a pending order.
+    PUT /api/orders/reject/<order_number>/
+    Body: { "reason": "Out of stock" }
+    """
+    try:
+        order_address = OrderAddress.objects.filter(order_number=order_number).first()
+
+        if not order_address:
+            return Response(
+                {'message': 'Order not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        current = normalize_status(order_address.order_final_status)
+        if current not in ('pending', 'confirmed'):
+            return Response(
+                {'message': f'Order is "{current}", cannot reject at this stage.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        reason = request.data.get('reason', 'No reason provided')
+
+        order_address.order_final_status = 'cancelled'
+        order_address.save()
+
+        return Response(
+            {
+                'message': 'Order rejected successfully',
+                'order_number': order_number,
+                'reason': reason,
+            },
+            status=status.HTTP_200_OK
+        )
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return Response(
+            {'message': f'Failed to reject order: {str(e)}'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+
+
+
+

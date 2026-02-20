@@ -148,6 +148,14 @@ const Navbar = () => {
                         <FaClipboardList />
                         <span>My Orders</span>
                       </Link>
+                      <Link
+                        to="/changepassword"
+                        className="dropdown-item"
+                        onClick={() => setDropdownOpen(false)}
+                      >
+                        <FaClipboardList />
+                        <span>ChangPassword</span>
+                      </Link>
                       <div className="dropdown-divider" />
                       <button onClick={handleLogout} className="dropdown-item logout-btn">
                         <FaSignInAlt />
