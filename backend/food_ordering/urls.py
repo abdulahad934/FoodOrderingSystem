@@ -22,5 +22,9 @@ urlpatterns = [
     path('orders/by_order_number/<str:order_number>/', get_order_by_number),
     path('order-address/<str:order_number>/', get_order_address),
     path('payment-details/<str:order_number>/', get_payment_details),
+    path('invoice/<str:order_number>/', get_invoice),
+    path("user/<int:user_id>/", get_user_profile),
+     path('user/update/<int:user_id>/', update_user_profile),
+    
     
 ]

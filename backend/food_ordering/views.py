@@ -485,3 +485,92 @@ def get_payment_details(request, order_number):
             {"message": "Failed to load payment details"}, 
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
+
+from django.shortcuts import render
+def get_invoice(request, order_number):
+    """Generate invoice for an order"""
+    try:
+        orders = Order.objects.filter(
+            order_number=order_number, 
+            is_order_placed=True
+        ).select_related('food')
+        
+        address = OrderAddress.objects.get(order_number=order_number)
+
+        grand_total = 0
+        order_data = []
+
+        for order in orders:
+            total_price = order.food.item_price * order.quantity
+            grand_total += total_price
+            order_data.append({
+                'food': order.food,
+                'quantity': order.quantity,
+                'total_price': total_price
+            })
+        
+        return render(request, 'invoice.html', {
+            'order_number': order_number,
+            'order_data': order_data,
+            'address': address,
+            'grand_total': grand_total
+        })
+        
+    except OrderAddress.DoesNotExist:
+        return render(request, 'invoice.html', {
+            'error': 'Order not found'
+        })
+
+
+@api_view(['GET'])
+def get_user_profile(request, user_id):
+    """
+    Get user profile by user ID
+    """
+    try:
+        user = get_object_or_404(User, id=user_id)
+        serializer = UserSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Exception as e:
+        print(f"Error in get_user_profile: {str(e)}")
+        return Response(
+            {"message": "Failed to load profile"}, 
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@api_view(['PUT'])
+def update_user_profile(request, user_id):
+    """
+    Update user profile
+    """
+    try:
+        user = get_object_or_404(User, id=user_id)
+        
+        # Update only allowed fields
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {
+                    "message": "Profile updated successfully",
+                    "data": serializer.data
+                }, 
+                status=status.HTTP_200_OK
+            )
+        
+        return Response(
+            {
+                "message": "Invalid data",
+                "errors": serializer.errors
+            }, 
+            status=status.HTTP_400_BAD_REQUEST
+        )
+        
+    except Exception as e:
+        print(f"Error in update_user_profile: {str(e)}")
+        return Response(
+            {"message": "Failed to update profile"}, 
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )

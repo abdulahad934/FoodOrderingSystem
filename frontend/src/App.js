@@ -15,6 +15,7 @@ import Cart from './pages/Cart';
 import PaymentPage from './pages/PaymentPage';
 import MyOrders from './pages/MyOrders';
 import OrderDetails from './pages/OrderDetails';
+import ProfilePage from './pages/ProfilePage';
 
 
 function App() {
@@ -36,6 +37,7 @@ function App() {
         <Route path='/payment' element={<PaymentPage/>}/>
         <Route path='/my-orders' element={<MyOrders/>}/>
         <Route path='/order-details/:order_number' element={<OrderDetails/>}/>
+        <Route path='/profile' element={<ProfilePage/>}/>
       </Routes>
       
 

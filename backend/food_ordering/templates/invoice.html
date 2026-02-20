@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice #{{ order_number }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Fraunces:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: #f0f2f5;
+            padding: 40px 20px;
+            color: #1a1d27;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .invoice-container {
+            max-width: 860px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        /* ── Header ── */
+        .invoice-header {
+            background: #0f1117;
+            padding: 44px 48px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .invoice-header::after {
+            content: '';
+            position: absolute;
+            bottom: -60px; right: -40px;
+            width: 220px; height: 220px;
+            border-radius: 50%;
+            background: rgba(232, 71, 28, 0.12);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 36px;
+            position: relative; z-index: 1;
+        }
+
+        .brand { display: flex; align-items: center; gap: 14px; }
+
+        .brand-icon {
+            width: 50px; height: 50px;
+            background: #e8471c;
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem;
+            box-shadow: 0 6px 20px rgba(232, 71, 28, 0.4);
+            flex-shrink: 0;
+        }
+
+        .brand-text h1 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: #fff;
+            line-height: 1;
+        }
+
+        .brand-text p {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.8rem;
+            font-weight: 400;
+            margin-top: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        .invoice-badge {
+            text-align: right;
+        }
+
+        .invoice-badge .label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: rgba(255,255,255,0.4);
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .invoice-badge .number {
+            font-family: 'Fraunces', serif;
+            font-size: 2rem;
+            font-weight: 900;
+            color: #fff;
+            line-height: 1;
+        }
+
+        .invoice-badge .num-tag {
+            display: inline-block;
+            margin-top: 8px;
+            background: rgba(232, 71, 28, 0.2);
+            border: 1px solid rgba(232, 71, 28, 0.4);
+            color: #e8471c;
+            padding: 5px 14px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .header-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 24px;
+            position: relative; z-index: 1;
+            padding-top: 28px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .meta-item .meta-label {
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.35);
+            margin-bottom: 6px;
+        }
+
+        .meta-item .meta-value {
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: rgba(255,255,255,0.9);
+            line-height: 1.5;
+        }
+
+        /* ── Body ── */
+        .invoice-body { padding: 40px 48px; }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-family: 'Fraunces', serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #1a1d27;
+        }
+
+        .item-count {
+            background: #fff3ef;
+            color: #e8471c;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 20px;
+            letter-spacing: 0.3px;
+        }
+
+        /* ── Table ── */
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 8px;
+        }
+
+        .items-table thead tr {
+            background: #f7f8fa;
+        }
+
+        .items-table th {
+            padding: 13px 16px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: #8a8fa3;
+            text-align: left;
+        }
+
+        .items-table th:first-child { border-radius: 10px 0 0 10px; padding-left: 20px; }
+        .items-table th:last-child  { border-radius: 0 10px 10px 0; text-align: right; padding-right: 20px; }
+        .items-table th.center      { text-align: center; }
+
+        .items-table tbody tr {
+            border-bottom: 1px solid #f0f2f5;
+            transition: background 0.15s;
+        }
+
+        .items-table tbody tr:last-child { border-bottom: none; }
+        .items-table tbody tr:hover { background: #fafbfc; }
+
+        .items-table td {
+            padding: 18px 16px;
+            font-size: 0.92rem;
+            color: #2b2d3a;
+        }
+
+        .items-table td:first-child { padding-left: 20px; }
+        .items-table td:last-child  { padding-right: 20px; }
+
+        .row-num {
+            width: 28px; height: 28px;
+            background: #f0f2f5;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #8a8fa3;
+        }
+
+        .food-name {
+            font-weight: 600;
+            color: #1a1d27;
+            font-size: 0.95rem;
+        }
+
+        .food-desc {
+            font-size: 0.78rem;
+            color: #adb0be;
+            margin-top: 3px;
+        }
+
+        .qty-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 34px;
+            padding: 4px 10px;
+            background: #fff3ef;
+            color: #e8471c;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.88rem;
+        }
+
+        .price-cell {
+            font-weight: 600;
+            color: #2b2d3a;
+        }
+
+        .total-cell {
+            font-weight: 700;
+            color: #1a1d27;
+            text-align: right;
+            font-size: 0.95rem;
+        }
+
+        .center-cell { text-align: center; }
+
+        /* ── Summary ── */
+        .summary-wrap {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 28px;
+        }
+
+        .summary-box {
+            width: 340px;
+            background: #f7f8fa;
+            border-radius: 16px;
+            padding: 22px 24px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 9px 0;
+            font-size: 0.9rem;
+            color: #5a5e72;
+        }
+
+        .summary-row + .summary-row { border-top: 1px solid #edf0f4; }
+
+        .summary-row.total-row {
+            margin-top: 12px;
+            padding-top: 16px;
+            border-top: 2px solid #e8471c !important;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #1a1d27;
+        }
+
+        .total-row .amount {
+            font-family: 'Fraunces', serif;
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: #e8471c;
+        }
+
+        /* ── Footer ── */
+        .invoice-footer {
+            padding: 32px 48px;
+            border-top: 1px solid #f0f2f5;
+            background: #fafbfc;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            margin-bottom: 24px;
+        }
+
+        .footer-col h4 {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: #b0b3c1;
+            margin-bottom: 10px;
+        }
+
+        .footer-col p {
+            font-size: 0.88rem;
+            color: #5a5e72;
+            line-height: 1.8;
+        }
+
+        .thank-you-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 28px;
+            background: #0f1117;
+            border-radius: 14px;
+        }
+
+        .thank-you-bar .ty-text h3 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.15rem;
+            font-weight: 900;
+            color: #fff;
+        }
+
+        .thank-you-bar .ty-text p {
+            font-size: 0.82rem;
+            color: rgba(255,255,255,0.45);
+            margin-top: 3px;
+        }
+
+        .ty-badge {
+            background: #e8471c;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+
+        /* ── Print Button ── */
+        .print-button {
+            position: fixed;
+            bottom: 28px; right: 28px;
+            background: #e8471c;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.92rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(232, 71, 28, 0.4);
+            transition: all 0.2s;
+            z-index: 999;
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        .print-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(232, 71, 28, 0.5);
+        }
+
+        /* ── Print ── */
+        @media print {
+            body { background: white; padding: 0; }
+            .invoice-container { box-shadow: none; border-radius: 0; }
+            .print-button { display: none; }
+        }
+
+        /* ── Mobile ── */
+        @media (max-width: 640px) {
+            .invoice-header, .invoice-body, .invoice-footer { padding: 28px 24px; }
+            .header-top { flex-direction: column; gap: 20px; }
+            .invoice-badge { text-align: left; }
+            .header-meta { grid-template-columns: 1fr 1fr; }
+            .footer-grid { grid-template-columns: 1fr; gap: 20px; }
+            .summary-wrap { justify-content: stretch; }
+            .summary-box { width: 100%; }
+            .thank-you-bar { flex-direction: column; gap: 14px; text-align: center; }
+            .items-table th, .items-table td { padding: 12px 10px; font-size: 0.82rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-container">
+
+        <!-- ── Header ── -->
+        <div class="invoice-header">
+            <div class="header-top">
+                <div class="brand">
+                    <div class="brand-icon">🍔</div>
+                    <div class="brand-text">
+                        <h1>FoodOrder</h1>
+                        <p>Fast & Fresh Delivery</p>
+                    </div>
+                </div>
+                <div class="invoice-badge">
+                    <div class="label">Document</div>
+                    <div class="number">INVOICE</div>
+                    <div class="num-tag">#{{ order_number }}</div>
+                </div>
+            </div>
+
+            <div class="header-meta">
+                <div class="meta-item">
+                    <div class="meta-label">Date</div>
+                    <div class="meta-value">{{ address.order_time|date:"F d, Y" }}</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">Time</div>
+                    <div class="meta-value">{{ address.order_time|date:"h:i A" }}</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">Delivery Address</div>
+                    <div class="meta-value">{{ address.address }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Body ── -->
+        <div class="invoice-body">
+            <div class="section-header">
+                <h3 class="section-title">Order Items</h3>
+                <span class="item-count">{{ order_data|length }} item{% if order_data|length != 1 %}s{% endif %}</span>
+            </div>
+
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Food Item</th>
+                        <th class="center">Qty</th>
+                        <th>Unit Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order_data %}
+                    <tr>
+                        <td><div class="row-num">{{ forloop.counter }}</div></td>
+                        <td>
+                            <div class="food-name">{{ item.food.item_name }}</div>
+                            <div class="food-desc">{{ item.food.item_description|default:"Fresh & delicious" }}</div>
+                        </td>
+                        <td class="center-cell">
+                            <span class="qty-badge">{{ item.quantity }}</span>
+                        </td>
+                        <td class="price-cell">৳{{ item.food.item_price }}</td>
+                        <td class="total-cell">৳{{ item.total_price }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Summary -->
+            <div class="summary-wrap">
+                <div class="summary-box">
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+                        <span>৳{{ grand_total }}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Delivery Fee</span>
+                        <span>৳50.00</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Tax (5%)</span>
+                        <span>৳{{ grand_total|floatformat:2 }}</span>
+                    </div>
+                    <div class="summary-row total-row">
+                        <span>Total Amount</span>
+                        <span class="amount">৳{{ grand_total }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Footer ── -->
+        <div class="invoice-footer">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4>Contact Us</h4>
+                    <p>
+                        Phone: +880 1234-567890<br>
+                        Email: support@foodorder.com<br>
+                        Web: www.foodorder.com
+                    </p>
+                </div>
+                <div class="footer-col">
+                    <h4>Our Location</h4>
+                    <p>
+                        123 Food Street<br>
+                        Dhaka 1000, Bangladesh
+                    </p>
+                </div>
+            </div>
+
+            <div class="thank-you-bar">
+                <div class="ty-text">
+                    <h3>Thank you for your order!</h3>
+                    <p>We hope you enjoy your meal. See you again soon.</p>
+                </div>
+                <div class="ty-badge">🎉 Enjoy your food</div>
+            </div>
+        </div>
+    </div>
+
+    <button class="print-button" onclick="window.print()">
+        🖨️ Print Invoice
+    </button>
+</body>
+</html>

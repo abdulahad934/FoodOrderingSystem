@@ -62,3 +62,16 @@ class MyOrdersListSerializer(serializers.ModelSerializer):
         return obj.order_final_status or "Waiting for Restaurant confirmation"
     
 
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            'id',
+            'first_name',
+            'last_name',
+            'email',
+            'phone_number',
+            'reg_date'
+        ]
+        read_only_fields = ['id', 'email', 'phone_number', 'reg_date']

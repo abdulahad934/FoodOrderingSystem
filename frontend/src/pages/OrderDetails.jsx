@@ -111,7 +111,9 @@ const OrderDetails = () => {
   };
 
   const handlePrintInvoice = () => {
-    window.print();
+    window.open(`http://127.0.0.1:1000/api/invoice/${order_number}/`, '_blank');
+    
+
   };
 
   const getStatusColor = (status) => {
