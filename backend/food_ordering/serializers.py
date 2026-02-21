@@ -75,3 +75,33 @@ class UserSerializer(serializers.ModelSerializer):
             'reg_date'
         ]
         read_only_fields = ['id', 'email', 'phone_number', 'reg_date']
+
+
+
+class OrderDetailSerializer(serializers.ModelSerializer):
+    user_first_name = serializers.CharField(source='user.first_name')
+    user_last_name = serializers.CharField(source='user.last_name')
+    user_email = serializers.EmailField(source='user.email')
+    user_phone_number = serializers.CharField(source='user.phone_number')
+    class Meta:
+        model = OrderAddress
+        fields = ['order_number', 'order_time', 'order_final_status', 'address',
+                   'user_first_name', 'user_last_name', 'user_email', 'user_phone_number']
+        
+
+class OrderFoodSerializer(serializers.ModelSerializer):
+    item_name = serializers.CharField(source='food.item_name')
+    item_price = serializers.CharField(source='food.item_price')
+    image = serializers.EmailField(source='food.image')
+    
+    class Meta:
+        model = Order
+        fields = ['item_name', 'item_price', 'image']
+
+
+
+class FoodTrackingDetailSerializer(serializers.ModelSerializer):
+   
+    class Meta:
+        model = FoodTracking
+        fields = ['remark', 'status', 'status_date', 'order_cancelled_by_user']

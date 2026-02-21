@@ -81,7 +81,7 @@ const AdminSidebar = () => {
           <Link to="/all-orders">All Orders</Link>
         </div>
 
-        <Link to="/admin/report" className="menu-item">
+        <Link to="/order-report" className="menu-item">
           <FaFile className="me-2" /> B/W Dates Report
         </Link>
 

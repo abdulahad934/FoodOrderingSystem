@@ -848,8 +848,111 @@ def reject_order(request, order_number):
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
 
+        
 
 
 
 
+@api_view(['POST'])
+def order_between_dates(request):
+    """
+    Get orders between two dates, optionally filtered by status.
+    Body: { "from_date": "2024-01-01", "to_date": "2024-12-31", "status": "all" }
+    """
+    try:
+        from_date     = request.data.get('from_date')
+        to_date       = request.data.get('to_date')
+        status_filter = request.data.get('status', 'all')  # renamed — avoids clash with DRF 'status' module
 
+        if not from_date or not to_date:
+            return Response(
+                {'message': 'from_date and to_date are required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # ── Base queryset filtered by date range ──────────────────────
+        order_addresses = OrderAddress.objects.filter(
+            order_time__date__range=[from_date, to_date]
+        )
+
+        # ── Status filtering ──────────────────────────────────────────
+        if status_filter == 'all':
+            pass
+
+        elif status_filter == 'not_confirmed':
+            order_addresses = order_addresses.filter(
+                Q(order_final_status__isnull=True) |
+                Q(order_final_status='')           |
+                Q(order_final_status='not_confirmed')
+            )
+
+        else:
+            order_addresses = order_addresses.filter(order_final_status=status_filter)
+
+        # ── Build response list ───────────────────────────────────────
+        orders_list = []
+
+        for order_address in order_addresses:
+            order_number = order_address.order_number
+
+            if not order_number:
+                continue
+
+            order_items = (
+                Order.objects
+                .filter(order_number=order_number, is_order_placed=True)
+                .select_related('food', 'user')
+            )
+
+            if not order_items.exists():
+                continue
+
+            user    = order_items.first().user
+            payment = PaymentDetail.objects.filter(order_number=order_number).first()
+
+            total_amount = sum(
+                float(item.food.item_price) * item.quantity
+                for item in order_items
+            )
+
+            orders_list.append({
+                'id':             order_address.id,
+                'order_number':   order_number,
+                'customer_name':  f"{user.first_name} {user.last_name}" if user else 'N/A',
+                'customer_email': user.email        if user else 'N/A',
+                'customer_phone': user.phone_number if user else 'N/A',
+                'address':        order_address.address,
+                'status':         order_address.order_final_status or 'not_confirmed',
+                'created_at':     order_address.order_time.isoformat() if order_address.order_time else None,
+                'item_count':     order_items.count(),
+                'total_amount':   round(total_amount, 2),
+                'payment_mode':   payment.payment_mode if payment else 'cod',
+            })
+
+        # Sort newest first
+        orders_list.sort(key=lambda x: x['created_at'] or '', reverse=True)
+
+        return Response(orders_list, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return Response(
+            {'message': f'Failed to fetch report: {str(e)}'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+    
+@api_view(['GET'])
+def view_order_details(request, order_number):
+    try:
+        order_address = OrderAddress.objects.get(order_number=order_number).select_related('user')
+        ordered_foods = Order.objects.filter(order_number=order_number).select_related('food')
+        tracking = FoodTracking.objects.filter(order_number=order_number)
+    
+    except:
+        return Response({'message': 'Somthing went Wrong'}, status=status.HTTP_404_NOT_FOUND)
+    return Response({
+        'order': OrderDetailSerializer(order_address).data,
+        'foods': OrderFoodSerializer(ordered_foods, many=True).data,
+        'tracking': FoodTrackingDetailSerializer(tracking, many=True).data,
+    }, status=status.HTTP_200_OK)

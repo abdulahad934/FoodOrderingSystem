@@ -24,6 +24,7 @@ import FoodPickup from './pages/FoodPickup';
 import Delivered from './pages/Delivered';
 import BeingPrepared from './pages/BeingPrepared';
 import Confirmed from './pages/Confirmed';
+import OrderReport from './pages/OrderReport';
 
 
 function App() {
@@ -54,6 +55,7 @@ function App() {
         <Route path='/delivered' element={<Delivered/>}/>
         <Route path='/being-prepared' element={<BeingPrepared/>}/>
         <Route path='/confirmed' element={<Confirmed/>}/>
+        <Route path='/order-report' element={<OrderReport/>}/>
       </Routes>
       
 

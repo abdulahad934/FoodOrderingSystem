@@ -33,6 +33,8 @@ urlpatterns = [
     path('orders-delivered/', food_delivered),
     path('order-cancelled/', order_cancelled),
     path('all-foods/', all_orders),
+    path('order_between_dates/', order_between_dates),
+    path('view-order-details/<str:order_number>/', view_order_details),
     
     
 ]
