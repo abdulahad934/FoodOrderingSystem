@@ -1,0 +1,333 @@
+/* ── Page ── */
+.ds-page {
+  padding: 24px;
+  min-height: 100vh;
+  background: #f1f5f9;
+}
+
+.ds-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  gap: 14px;
+  color: #64748b;
+}
+
+.ds-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e2e8f0;
+  border-top-color: #4f46e5;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Welcome ── */
+.ds-welcome {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.ds-welcome-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0 0 4px;
+}
+
+.ds-welcome-sub {
+  font-size: 14px;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.ds-date-chip {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 13px;
+  color: #475569;
+  font-weight: 500;
+}
+
+/* ── Stat Cards ── */
+.ds-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.ds-stat-card {
+  background: white;
+  border-radius: 16px;
+  padding: 22px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.ds-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+}
+
+.ds-stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+
+.ds-card-orders::before  { background: linear-gradient(90deg, #4f46e5, #7c3aed); }
+.ds-card-revenue::before { background: linear-gradient(90deg, #059669, #10b981); }
+.ds-card-users::before   { background: linear-gradient(90deg, #0891b2, #06b6d4); }
+.ds-card-foods::before   { background: linear-gradient(90deg, #d97706, #f59e0b); }
+
+.ds-stat-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.ds-card-orders  .ds-stat-icon { background: #ede9fe; color: #4f46e5; }
+.ds-card-revenue .ds-stat-icon { background: #d1fae5; color: #059669; }
+.ds-card-users   .ds-stat-icon { background: #cffafe; color: #0891b2; }
+.ds-card-foods   .ds-stat-icon { background: #fef3c7; color: #d97706; }
+
+.ds-stat-num {
+  font-size: 26px;
+  font-weight: 800;
+  color: #1e293b;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.ds-stat-label {
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 6px;
+}
+
+.ds-stat-today {
+  font-size: 12px;
+  color: #059669;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+}
+
+/* ── Status Row ── */
+.ds-status-row {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.ds-status-chip {
+  background: white;
+  border-radius: 14px;
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  transition: transform 0.2s, box-shadow 0.2s;
+  border-bottom: 3px solid transparent;
+}
+
+.ds-status-chip:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+}
+
+.ds-status-chip svg { font-size: 18px; }
+
+.ds-chip-num {
+  font-size: 22px;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.ds-chip-label {
+  font-size: 11px;
+  color: #94a3b8;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.ds-chip-pending    { border-bottom-color: #f59e0b; }
+.ds-chip-pending    svg { color: #f59e0b; }
+.ds-chip-confirmed  { border-bottom-color: #10b981; }
+.ds-chip-confirmed  svg { color: #10b981; }
+.ds-chip-preparing  { border-bottom-color: #f97316; }
+.ds-chip-preparing  svg { color: #f97316; }
+.ds-chip-delivery   { border-bottom-color: #8b5cf6; }
+.ds-chip-delivery   svg { color: #8b5cf6; }
+.ds-chip-delivered  { border-bottom-color: #059669; }
+.ds-chip-delivered  svg { color: #059669; }
+.ds-chip-cancelled  { border-bottom-color: #ef4444; }
+.ds-chip-cancelled  svg { color: #ef4444; }
+
+/* ── Recent Orders Table ── */
+.ds-table-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  overflow: hidden;
+}
+
+.ds-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.ds-table-header h2 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ds-table-header h2 svg { color: #4f46e5; }
+
+.ds-view-all {
+  font-size: 13px;
+  color: #4f46e5;
+  text-decoration: none;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+
+.ds-view-all:hover { opacity: 0.7; }
+
+.ds-table-wrap { overflow-x: auto; }
+
+.ds-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.ds-table thead tr { background: #1e293b; }
+
+.ds-table thead th {
+  padding: 12px 18px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ds-tr {
+  border-bottom: 1px solid #f1f5f9;
+  transition: background 0.15s;
+}
+
+.ds-tr:hover { background: #f8fafc; }
+.ds-tr:last-child { border-bottom: none; }
+
+.ds-table td {
+  padding: 14px 18px;
+  font-size: 14px;
+  color: #334155;
+  vertical-align: middle;
+}
+
+.ds-no-data {
+  text-align: center;
+  color: #94a3b8;
+  padding: 40px !important;
+}
+
+.ds-cust {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ds-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.ds-cust-name { font-weight: 600; color: #1e293b; font-size: 14px; }
+.ds-cust-phone { font-size: 12px; color: #94a3b8; }
+
+.ds-amount { font-weight: 700; color: #059669; }
+.ds-date { color: #94a3b8; font-size: 13px; }
+
+.ds-pay {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.ds-pay-cod    { background: #fef3c7; color: #92400e; }
+.ds-pay-online { background: #d1fae5; color: #065f46; }
+
+.ds-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.ds-badge-pending   { background: #fef3c7; color: #92400e; }
+.ds-badge-confirmed { background: #d1fae5; color: #065f46; }
+.ds-badge-preparing { background: #ffedd5; color: #9a3412; }
+.ds-badge-delivery  { background: #ede9fe; color: #5b21b6; }
+.ds-badge-delivered { background: #dcfce7; color: #14532d; }
+.ds-badge-cancelled { background: #fee2e2; color: #991b1b; }
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .ds-stat-grid   { grid-template-columns: repeat(2, 1fr); }
+  .ds-status-row  { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .ds-page        { padding: 12px; }
+  .ds-stat-grid   { grid-template-columns: repeat(2, 1fr); }
+  .ds-status-row  { grid-template-columns: repeat(2, 1fr); }
+}

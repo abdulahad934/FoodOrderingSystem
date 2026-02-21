@@ -1,0 +1,274 @@
+/* ── Page Layout ── */
+.ru-page {
+  padding: 24px;
+  min-height: 100vh;
+  background: #f1f5f9;
+}
+
+.ru-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  gap: 12px;
+  color: #64748b;
+}
+
+/* ── Header ── */
+.ru-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: white;
+  border-radius: 16px;
+  padding: 24px 28px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.ru-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.ru-header-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 22px;
+  box-shadow: 0 4px 12px rgba(79,70,229,0.3);
+}
+
+.ru-header h1 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 4px;
+}
+
+.ru-header p {
+  font-size: 13px;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.ru-stats {
+  display: flex;
+  gap: 12px;
+}
+
+.ru-stat-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 14px 24px;
+  text-align: center;
+  min-width: 100px;
+}
+
+.ru-stat-today {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  border-color: transparent;
+}
+
+.ru-stat-today .ru-stat-number,
+.ru-stat-today .ru-stat-label {
+  color: white;
+}
+
+.ru-stat-number {
+  display: block;
+  font-size: 26px;
+  font-weight: 800;
+  color: #1e293b;
+  line-height: 1;
+}
+
+.ru-stat-label {
+  display: block;
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ── Toolbar ── */
+.ru-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.ru-search-wrap {
+  position: relative;
+  flex: 1;
+  max-width: 420px;
+}
+
+.ru-search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.ru-search-input {
+  width: 100%;
+  padding: 11px 14px 11px 40px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 14px;
+  background: white;
+  color: #1e293b;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.ru-search-input:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
+}
+
+.ru-count {
+  font-size: 13px;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+/* ── Empty ── */
+.ru-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: #94a3b8;
+}
+
+.ru-empty-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.3;
+}
+
+.ru-empty h3 {
+  color: #475569;
+  margin-bottom: 8px;
+}
+
+/* ── Table ── */
+.ru-table-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  overflow: hidden;
+}
+
+.ru-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.ru-table thead tr {
+  background: #1e293b;
+}
+
+.ru-table thead th {
+  padding: 14px 18px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ru-row {
+  border-bottom: 1px solid #f1f5f9;
+  transition: background 0.15s;
+}
+
+.ru-row:hover {
+  background: #f8fafc;
+}
+
+.ru-row:last-child {
+  border-bottom: none;
+}
+
+.ru-table td {
+  padding: 14px 18px;
+  font-size: 14px;
+  color: #334155;
+  vertical-align: middle;
+}
+
+.ru-idx {
+  color: #94a3b8 !important;
+  font-size: 13px !important;
+  width: 40px;
+}
+
+.ru-user-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ru-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
+.ru-name {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.ru-icon-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ru-cell-icon {
+  color: #94a3b8;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.ru-footer {
+  padding: 14px 18px;
+  border-top: 1px solid #f1f5f9;
+  font-size: 12px;
+  color: #94a3b8;
+  text-align: right;
+}
+
+@media (max-width: 768px) {
+  .ru-page { padding: 12px; }
+  .ru-header { flex-direction: column; align-items: flex-start; }
+  .ru-table thead th:nth-child(3),
+  .ru-table td:nth-child(3) { display: none; }
+}

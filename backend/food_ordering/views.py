@@ -944,15 +944,115 @@ def order_between_dates(request):
     
 @api_view(['GET'])
 def view_order_details(request, order_number):
+    """
+    Get complete order details with tracking
+    """
     try:
-        order_address = OrderAddress.objects.get(order_number=order_number).select_related('user')
-        ordered_foods = Order.objects.filter(order_number=order_number).select_related('food')
-        tracking = FoodTracking.objects.filter(order_number=order_number)
+        # Get order address with user info
+        order_address = OrderAddress.objects.select_related('user').get(
+            order_number=order_number
+        )
+        
+        # Get ordered foods
+        ordered_foods = Order.objects.filter(
+            order_number=order_number,
+            is_order_placed=True
+        ).select_related('food')
+        
+        # Get tracking info
+        tracking = FoodTracking.objects.filter(
+            order__order_number=order_number
+        ).order_by('-status_date')
+        
+        # Serialize data
+        order_data = OrderDetailSerializer(order_address).data
+        foods_data = OrderFoodSerializer(ordered_foods, many=True).data
+        tracking_data = FoodTrackingDetailSerializer(tracking, many=True).data
+        
+        return Response({
+            'order': order_data,
+            'foods': foods_data,
+            'tracking': tracking_data,
+        }, status=status.HTTP_200_OK)
+        
+    except OrderAddress.DoesNotExist:
+        return Response(
+            {'message': 'Order not found'}, 
+            status=status.HTTP_404_NOT_FOUND
+        )
+    except Exception as e:
+        print(f"Error in view_order_details: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return Response(
+            {'message': 'Something went wrong'}, 
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+
+
+@api_view(['PUT'])
+def update_order_status(request, order_number):
+    """
+    Update order status to any valid status.
+    Body: { "status": "confirmed", "remark": "optional note" }
+    """
+    VALID_STATUSES = ['pending', 'confirmed', 'preparing', 'out_for_delivery', 'delivered', 'cancelled']
     
-    except:
-        return Response({'message': 'Somthing went Wrong'}, status=status.HTTP_404_NOT_FOUND)
-    return Response({
-        'order': OrderDetailSerializer(order_address).data,
-        'foods': OrderFoodSerializer(ordered_foods, many=True).data,
-        'tracking': FoodTrackingDetailSerializer(tracking, many=True).data,
-    }, status=status.HTTP_200_OK)
+    try:
+        order_address = OrderAddress.objects.filter(order_number=order_number).first()
+
+        if not order_address:
+            return Response(
+                {'message': 'Order not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        new_status = request.data.get('status')
+        remark = request.data.get('remark', '')
+
+        if not new_status or new_status not in VALID_STATUSES:
+            return Response(
+                {'message': f'Invalid status. Must be one of: {", ".join(VALID_STATUSES)}'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        order_address.order_final_status = new_status
+        order_address.save()
+
+        return Response(
+            {
+                'message': f'Order status updated to "{new_status}"',
+                'order_number': order_number,
+                'status': new_status,
+                'remark': remark,
+            },
+            status=status.HTTP_200_OK
+        )
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return Response(
+            {'message': f'Failed to update order status: {str(e)}'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@api_view(['GET'])
+def registered_users(request):
+    """Get all registered users"""
+    try:
+        users = User.objects.all().order_by('-reg_date')
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response(
+            {'message': f'Failed to load users: {str(e)}'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+
+

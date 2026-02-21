@@ -6,8 +6,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import { 
   FaBox, 
   FaEye, 
-  FaCheckCircle, 
-  FaTimes,
   FaUser,
   FaMapMarkerAlt,
   FaMoneyBillWave
@@ -39,50 +37,6 @@ const OrdersNotConfirmed = () => {
       toast.error('Failed to load orders');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleConfirmOrder = async (orderId) => {
-    if (!window.confirm('Are you sure you want to confirm this order?')) return;
-
-    try {
-      const response = await fetch(`http://127.0.0.1:1000/api/orders/confirm/${orderId}/`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' }
-      });
-      const data = await response.json();
-      if (response.ok) {
-        toast.success('Order confirmed successfully');
-        fetchOrders();
-      } else {
-        toast.error(data.message || 'Failed to confirm order');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      toast.error('Error confirming order');
-    }
-  };
-
-  const handleRejectOrder = async (orderId) => {
-    const reason = prompt('Please enter reason for rejection:');
-    if (!reason) return;
-
-    try {
-      const response = await fetch(`http://127.0.0.1:1000/api/orders/reject/${orderId}/`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reason })
-      });
-      const data = await response.json();
-      if (response.ok) {
-        toast.success('Order rejected');
-        fetchOrders();
-      } else {
-        toast.error(data.message || 'Failed to reject order');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      toast.error('Error rejecting order');
     }
   };
 
@@ -205,23 +159,11 @@ const OrdersNotConfirmed = () => {
                 {/* Actions */}
                 <div className="order-actions">
                   <Link
-                    to={`/admin/order-details/${order.order_number}`}
+                    to={`/view-food-order/${order.order_number}`}
                     className="action-btn view-btn"
                   >
                     <FaEye /> View Details
                   </Link>
-                  <button
-                    className="action-btn confirm-btn"
-                    onClick={() => handleConfirmOrder(order.order_number)}
-                  >
-                    <FaCheckCircle /> Confirm
-                  </button>
-                  <button
-                    className="action-btn reject-btn"
-                    onClick={() => handleRejectOrder(order.order_number)}
-                  >
-                    <FaTimes /> Reject
-                  </button>
                 </div>
 
               </div>

@@ -79,29 +79,40 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class OrderDetailSerializer(serializers.ModelSerializer):
-    user_first_name = serializers.CharField(source='user.first_name')
-    user_last_name = serializers.CharField(source='user.last_name')
-    user_email = serializers.EmailField(source='user.email')
-    user_phone_number = serializers.CharField(source='user.phone_number')
+    user_first_name = serializers.CharField(source='user.first_name', read_only=True)
+    user_last_name = serializers.CharField(source='user.last_name', read_only=True)
+    user_email = serializers.EmailField(source='user.email', read_only=True)
+    user_phone_number = serializers.CharField(source='user.phone_number', read_only=True)
+    
     class Meta:
         model = OrderAddress
-        fields = ['order_number', 'order_time', 'order_final_status', 'address',
-                   'user_first_name', 'user_last_name', 'user_email', 'user_phone_number']
-        
+        fields = [
+            'order_number', 
+            'order_time', 
+            'order_final_status', 
+            'address',
+            'user_first_name', 
+            'user_last_name', 
+            'user_email', 
+            'user_phone_number'
+        ]
+
 
 class OrderFoodSerializer(serializers.ModelSerializer):
-    item_name = serializers.CharField(source='food.item_name')
-    item_price = serializers.CharField(source='food.item_price')
-    image = serializers.EmailField(source='food.image')
+    item_name = serializers.CharField(source='food.item_name', read_only=True)
+    item_price = serializers.DecimalField(source='food.item_price', max_digits=10, decimal_places=2, read_only=True)
+    image = serializers.ImageField(source='food.image', read_only=True)  # ✅ Fixed: was EmailField
+    total_price = serializers.SerializerMethodField()
     
     class Meta:
         model = Order
-        fields = ['item_name', 'item_price', 'image']
-
+        fields = ['item_name', 'item_price', 'quantity', 'image', 'total_price']
+    
+    def get_total_price(self, obj):
+        return float(obj.food.item_price) * obj.quantity
 
 
 class FoodTrackingDetailSerializer(serializers.ModelSerializer):
-   
     class Meta:
         model = FoodTracking
         fields = ['remark', 'status', 'status_date', 'order_cancelled_by_user']

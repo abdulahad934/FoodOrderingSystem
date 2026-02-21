@@ -156,7 +156,7 @@ const OrderCancelled = () => {
                       <td className="date-cell">{formatDate(order.created_at)}</td>
                       <td>
                         <Link
-                          to={`/admin/order-details/${order.order_number}`}
+                          to={`/view-food-order/${order.order_number}`}
                           className="view-btn"
                         >
                           <FaEye /> View

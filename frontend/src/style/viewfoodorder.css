@@ -1,0 +1,324 @@
+/* ── View Food Order Page ── */
+.vfo-page {
+  padding: 30px;
+  background: #f5f6fa;
+  min-height: 100vh;
+}
+
+/* Loading */
+.vfo-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 16px;
+  color: #636e72;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* Not found */
+.vfo-not-found {
+  text-align: center;
+  padding: 80px 20px;
+  color: #636e72;
+}
+
+.vfo-nf-icon {
+  font-size: 80px;
+  color: #dfe6e9;
+  margin-bottom: 20px;
+}
+
+/* Back button */
+.vfo-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 20px;
+  border-radius: 10px;
+  background: #f1f3f5;
+  color: #2d3436;
+  font-weight: 700;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.15s;
+  margin-bottom: 24px;
+  text-decoration: none;
+}
+
+.vfo-back-btn:hover {
+  background: #dee2e6;
+  transform: translateY(-1px);
+}
+
+/* Two column layout */
+.vfo-two-col {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 24px;
+  align-items: start;
+}
+
+/* Section card */
+.vfo-section {
+  background: white;
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.06);
+  margin-bottom: 24px;
+}
+
+.vfo-section:last-child {
+  margin-bottom: 0;
+}
+
+.vfo-section-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #2d3436;
+  margin: 0 0 20px;
+  padding-bottom: 14px;
+  border-bottom: 2px solid #f1f3f5;
+}
+
+/* Info table (left side top) */
+.vfo-info-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.vfo-info-table tr {
+  border-bottom: 1px solid #f1f3f5;
+}
+
+.vfo-info-table tr:last-child {
+  border-bottom: none;
+}
+
+.vfo-info-table th {
+  padding: 14px 16px 14px 0;
+  color: #636e72;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-align: left;
+  white-space: nowrap;
+  width: 130px;
+}
+
+.vfo-info-table td {
+  padding: 14px 0;
+  color: #2d3436;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* Status chip */
+.vfo-status-chip {
+  display: inline-block;
+  padding: 5px 14px;
+  border-radius: 20px;
+  color: white;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+/* Tracking table */
+.vfo-track-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.vfo-track-table thead {
+  background: #f8f9fa;
+}
+
+.vfo-track-table thead th {
+  padding: 12px 14px;
+  color: #2d3436;
+  font-weight: 800;
+  text-align: left;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.vfo-track-table tbody td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #f1f3f5;
+  color: #2d3436;
+  vertical-align: middle;
+}
+
+.vfo-track-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.vfo-track-table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+/* Update status form */
+.vfo-form-group {
+  margin-bottom: 18px;
+}
+
+.vfo-form-group label {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #636e72;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.vfo-select,
+.vfo-textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 2px solid #e9ecef;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  color: #2d3436;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+  background: white;
+}
+
+.vfo-select:focus,
+.vfo-textarea:focus {
+  border-color: #27ae60;
+}
+
+.vfo-textarea {
+  resize: vertical;
+  min-height: 110px;
+}
+
+.vfo-update-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.vfo-update-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 36px;
+  background: #27ae60;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 15px rgba(39,174,96,.3);
+}
+
+.vfo-update-btn:hover:not(:disabled) {
+  background: #219a52;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(39,174,96,.4);
+}
+
+.vfo-update-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* ── RIGHT: Food cards ── */
+.vfo-food-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid #f1f3f5;
+}
+
+.vfo-food-card:last-of-type {
+  border-bottom: none;
+}
+
+.vfo-food-img {
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  object-fit: cover;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,.1);
+}
+
+.vfo-food-img-placeholder {
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  background: #f1f3f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  flex-shrink: 0;
+}
+
+.vfo-food-info {
+  flex: 1;
+}
+
+.vfo-food-name {
+  font-weight: 700;
+  color: #2d3436;
+  font-size: 0.97rem;
+  margin-bottom: 5px;
+}
+
+.vfo-food-price {
+  font-weight: 800;
+  color: #27ae60;
+  font-size: 1rem;
+}
+
+/* Total bar */
+.vfo-total-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-top: 16px;
+  font-weight: 800;
+  color: #2d3436;
+  font-size: 1rem;
+}
+
+.vfo-total-num {
+  color: #27ae60;
+  font-size: 1.2rem;
+}
+
+.vfo-empty-text {
+  color: #adb5bd;
+  text-align: center;
+  padding: 20px 0;
+  font-size: 0.95rem;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .vfo-two-col {
+    grid-template-columns: 1fr;
+  }
+
+  .vfo-right {
+    order: -1; /* food items on top on mobile */
+  }
+}
+
+@media (max-width: 576px) {
+  .vfo-page { padding: 16px; }
+}

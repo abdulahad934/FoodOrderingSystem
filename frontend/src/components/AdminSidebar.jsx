@@ -38,11 +38,11 @@ const AdminSidebar = () => {
 
       {/* Menu */}
       <div className="menu-list">
-        <Link to="/admin/dashboard" className="menu-item">
+        <Link to="/dashboard" className="menu-item">
           <FaThLarge className="me-2" /> Dashboard
         </Link>
 
-        <Link to="/admin/users" className="menu-item">
+        <Link to="/registered-users" className="menu-item">
           <FaUsers className="me-2" /> Registered Users
         </Link>
 

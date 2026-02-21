@@ -17,12 +17,12 @@ const STATUS_LABELS = {
 };
 
 const STATUS_COLORS = {
-  not_confirmed:        'badge-pending',
-  Order_Confirmed:      'badge-confirmed',
-  Food_being_preparing: 'badge-preparing',
-  Food_Pickup:          'badge-pickup',
-  Food_delivered:       'badge-delivered',
-  Order_cancelled:      'badge-cancelled',
+  pending:          'badge-pending',
+  confirmed:        'badge-confirmed',
+  preparing:        'badge-preparing',
+  out_for_delivery: 'badge-pickup',
+  delivered:        'badge-delivered',
+  cancelled:        'badge-cancelled',
 };
 
 const formatDate = (d) => {
@@ -179,11 +179,11 @@ const OrderReport = () => {
                 <span className="s-label">Total Revenue</span>
               </div>
               <div className="summary-card s-delivered">
-                <span className="s-number">{orders.filter(o => o.status === 'Food_delivered').length}</span>
+                <span className="s-number">{orders.filter(o => o.status === 'delivered').length}</span>
                 <span className="s-label">Delivered</span>
               </div>
               <div className="summary-card s-cancelled">
-                <span className="s-number">{orders.filter(o => o.status === 'Order_cancelled').length}</span>
+                <span className="s-number">{orders.filter(o => o.status === 'cancelled').length}</span>
                 <span className="s-label">Cancelled</span>
               </div>
             </div>
@@ -230,7 +230,7 @@ const OrderReport = () => {
                           </td>
                           <td>
                             <span className={`status-badge ${STATUS_COLORS[order.status] || 'badge-pending'}`}>
-                              {STATUS_LABELS[order.status] || 'Pending'}
+                              {STATUS_LABELS[order.status] || order.status}
                             </span>
                           </td>
                           <td className="date-cell">{formatDate(order.created_at)}</td>

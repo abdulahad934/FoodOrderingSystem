@@ -25,6 +25,9 @@ import Delivered from './pages/Delivered';
 import BeingPrepared from './pages/BeingPrepared';
 import Confirmed from './pages/Confirmed';
 import OrderReport from './pages/OrderReport';
+import ViewFoodOrder from './pages/ViewFoodOrder';
+import RagisteredUsers from './pages/RagisteredUsers';
+import Dashboard from './pages/Dashboard';
 
 
 function App() {
@@ -56,6 +59,10 @@ function App() {
         <Route path='/being-prepared' element={<BeingPrepared/>}/>
         <Route path='/confirmed' element={<Confirmed/>}/>
         <Route path='/order-report' element={<OrderReport/>}/>
+        <Route path='/view-food-order/:order_number' element={<ViewFoodOrder/>}/>
+        <Route path='/registered-users' element={<RagisteredUsers/>}/>
+        <Route path='/dashboard' element={<Dashboard/>}/>
+        
       </Routes>
       
 
