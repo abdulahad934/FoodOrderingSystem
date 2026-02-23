@@ -2,11 +2,15 @@ import React, { useState, useEffect } from 'react';
 import AdminLayout from '../components/AdminLayout';
 import { CSVLink } from 'react-csv';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import '../style/managefood.css';
 
 const ManageFood = () => {
   const [foods, setFoods] = useState([]);
   const [allfoods, setAllfoods] = useState([]);
+  const [foodToDelete, setFoodToDelete] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     fetch('http://127.0.0.1:1000/api/foods/')
@@ -27,6 +31,54 @@ const ManageFood = () => {
         c.item_name.toLowerCase().includes(keyword)
       );
       setFoods(filtered);
+    }
+  };
+
+  const openDeleteModal = (food) => {
+    setFoodToDelete(food);
+    setShowModal(true);
+  };
+
+  const closeDeleteModal = () => {
+    setFoodToDelete(null);
+    setShowModal(false);
+  };
+
+  const handleDelete = async () => {
+    if (!foodToDelete) return;
+
+    const foodId = foodToDelete.id;
+    const foodName = foodToDelete.item_name;
+
+    setDeletingId(foodId);
+    closeDeleteModal();
+
+    try {
+      const response = await fetch(
+  `http://127.0.0.1:1000/api/food/delete/${foodId}/`,
+  { method: 'DELETE' }
+);
+
+      if (response.ok) {
+        setFoods((prev) => prev.filter((f) => f.id !== foodId));
+        setAllfoods((prev) => prev.filter((f) => f.id !== foodId));
+        toast.success(`"${foodName}" deleted successfully!`, {
+          position: 'top-center',
+          autoClose: 3000,
+        });
+      } else {
+        const data = await response.json();
+        toast.error(data.message || 'Failed to delete food item', {
+          position: 'top-center',
+        });
+      }
+    } catch (err) {
+      console.error('Delete error:', err);
+      toast.error('Error deleting food item. Please try again.', {
+        position: 'top-center',
+      });
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -87,11 +139,27 @@ const ManageFood = () => {
                       <td>{food.item_name}</td>
                       <td>
                         <div className="d-flex gap-2">
-                          <Link className="btn btn-sm btn-outline-primary">
+                          <Link
+                            to={`/edit-food/${food.id}`}
+                            className="btn btn-sm btn-outline-primary"
+                          >
                             <i className="fas fa-edit me-1"></i> Edit
                           </Link>
-                          <button className="btn btn-sm btn-outline-danger">
-                            <i className="fas fa-trash me-1"></i> Delete
+                          <button
+                            onClick={() => openDeleteModal(food)}
+                            disabled={deletingId === food.id}
+                            className="btn btn-sm btn-outline-danger"
+                          >
+                            {deletingId === food.id ? (
+                              <>
+                                <span className="spinner-border spinner-border-sm me-1"></span>
+                                Deleting...
+                              </>
+                            ) : (
+                              <>
+                                <i className="fas fa-trash me-1"></i> Delete
+                              </>
+                            )}
                           </button>
                         </div>
                       </td>
@@ -109,6 +177,51 @@ const ManageFood = () => {
           </div>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {showModal && (
+        <div
+          className="modal fade show d-block"
+          style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content rounded-3 shadow">
+              <div className="modal-header bg-danger text-white">
+                <h5 className="modal-title">
+                  <i className="fas fa-exclamation-triangle me-2"></i>
+                  Delete Confirmation
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close btn-close-white"
+                  onClick={closeDeleteModal}
+                ></button>
+              </div>
+              <div className="modal-body text-center py-4">
+                <p className="fs-5">
+                  Are you sure you want to delete{' '}
+                  <strong>"{foodToDelete?.item_name}"</strong>?
+                </p>
+                <p className="text-muted small">This action cannot be undone.</p>
+              </div>
+              <div className="modal-footer justify-content-center">
+                <button
+                  className="btn btn-secondary px-4"
+                  onClick={closeDeleteModal}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="btn btn-danger px-4"
+                  onClick={handleDelete}
+                >
+                  <i className="fas fa-trash me-1"></i> Yes, Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </AdminLayout>
   );
 };

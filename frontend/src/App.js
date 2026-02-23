@@ -29,6 +29,8 @@ import ViewFoodOrder from './pages/ViewFoodOrder';
 import RagisteredUsers from './pages/RagisteredUsers';
 import Dashboard from './pages/Dashboard';
 import SearchOrder from './pages/SearchOrder';
+import EditCategory from './pages/EditCategory';
+import EditFood from './pages/EditFood';
 
 
 function App() {
@@ -64,6 +66,8 @@ function App() {
         <Route path='/registered-users' element={<RagisteredUsers/>}/>
         <Route path='/dashboard' element={<Dashboard/>}/>
         <Route path='/search-order' element={<SearchOrder/>}/>
+        <Route path='/edit-category/:id' element={<EditCategory/>}/>
+        <Route path='/edit-food/:id' element={<EditFood/>}/>
         
       </Routes>
       

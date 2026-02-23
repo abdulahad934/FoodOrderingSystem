@@ -1148,3 +1148,197 @@ def search_orders(request):
             {"message": "Search failed"}, 
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
+
+
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def category_detail(request, id):
+    """
+    Get, Update, or Delete a category by ID
+    """
+    try:
+        category = Category.objects.get(id=id)
+    except Category.DoesNotExist:
+        return Response(
+            {'message': 'Category not found'}, 
+            status=status.HTTP_404_NOT_FOUND
+        )
+    
+    if request.method == 'GET':
+        serializer = CategorySerializer(category)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    elif request.method == 'PUT':
+        serializer = CategorySerializer(category, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {
+                    'message': 'Category updated successfully',
+                    'data': serializer.data
+                },
+                status=status.HTTP_200_OK
+            )
+        return Response(
+            {
+                'message': 'Category update failed',  # ✅ Fixed
+                'errors': serializer.errors  # ✅ Fixed
+            },
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    elif request.method == 'DELETE':
+        category_name = category.category_name
+        category.delete()
+        return Response(
+            {'message': f'Category "{category_name}" deleted successfully'},
+            status=status.HTTP_200_OK  # ✅ Changed from 204 to 200 for message
+        )
+
+
+
+@api_view(['PUT'])
+@parser_classes([MultiPartParser, FormParser])
+def update_food_item(request, id):
+    """
+    Update food item by ID
+    """
+    try:
+        food_item = get_object_or_404(Food, id=id)
+        
+        # Get data from request
+        category_id = request.data.get('category')
+        item_name = request.data.get('item_name')
+        item_description = request.data.get('item_description')
+        item_price = request.data.get('item_price')
+        item_quantity = request.data.get('item_quantity')
+        is_available = request.data.get('is_available', 'true').lower() == 'true'
+        image = request.FILES.get('image')
+        
+        print(f"🔄 Updating food item ID: {id}")
+        print(f"📝 Data: {request.data}")
+        
+        # Validate and update category
+        if category_id:
+            try:
+                category = Category.objects.get(id=category_id)
+                food_item.category = category
+            except Category.DoesNotExist:
+                return Response(
+                    {"message": "Category not found"},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+        
+        # Update item name
+        if item_name:
+            food_item.item_name = item_name.strip()
+        
+        # Update description
+        if item_description is not None:
+            food_item.item_description = item_description.strip()
+        
+        # Validate and update price
+        if item_price:
+            try:
+                price = float(item_price)
+                if price <= 0:
+                    return Response(
+                        {"message": "Price must be greater than 0"},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                food_item.item_price = price
+            except ValueError:
+                return Response(
+                    {"message": "Invalid price format"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        
+        # Update quantity
+        if item_quantity:
+            food_item.item_quantity = item_quantity.strip()
+        
+        # Update availability
+        food_item.is_available = is_available
+        
+        # Update image if provided
+        if image:
+            # Delete old image if exists
+            if food_item.image:
+                try:
+                    food_item.image.delete(save=False)
+                except:
+                    pass
+            food_item.image = image
+        
+        # Save the updated food item
+        food_item.save()
+        
+        # Serialize and return
+        serializer = FoodItemSerializer(food_item, context={'request': request})
+        
+        print(f"✅ Food item updated successfully: {food_item.item_name}")
+        
+        return Response(
+            {
+                "message": "Food item updated successfully!",
+                "data": serializer.data
+            },
+            status=status.HTTP_200_OK
+        )
+        
+    except Food.DoesNotExist:
+        return Response(
+            {"message": "Food item not found"},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    except Exception as e:
+        print(f"❌ Error updating food item: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return Response(
+            {
+                "message": "Failed to update food item",
+                "error": str(e)
+            },
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@api_view(['DELETE'])
+def delete_food_item(request, id):
+    """
+    Delete food item by ID
+    """
+    try:
+        food_item = get_object_or_404(Food, id=id)
+        food_name = food_item.item_name
+        
+        # Delete image if exists
+        if food_item.image:
+            try:
+                food_item.image.delete()
+            except:
+                pass
+        
+        # Delete the food item
+        food_item.delete()
+        
+        print(f"🗑️ Food item deleted: {food_name}")
+        
+        return Response(
+            {"message": f'Food item "{food_name}" deleted successfully'},
+            status=status.HTTP_200_OK
+        )
+        
+    except Food.DoesNotExist:
+        return Response(
+            {"message": "Food item not found"},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    except Exception as e:
+        print(f"❌ Error deleting food item: {str(e)}")
+        return Response(
+            {"message": "Failed to delete food item"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
