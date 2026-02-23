@@ -85,7 +85,7 @@ const AdminSidebar = () => {
           <FaFile className="me-2" /> B/W Dates Report
         </Link>
 
-        <Link to="/admin/search" className="menu-item">
+        <Link to="/search-order" className="menu-item">
           <FaSearch className="me-2" /> Search
         </Link>
 

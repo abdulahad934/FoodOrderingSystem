@@ -28,6 +28,7 @@ import OrderReport from './pages/OrderReport';
 import ViewFoodOrder from './pages/ViewFoodOrder';
 import RagisteredUsers from './pages/RagisteredUsers';
 import Dashboard from './pages/Dashboard';
+import SearchOrder from './pages/SearchOrder';
 
 
 function App() {
@@ -62,6 +63,7 @@ function App() {
         <Route path='/view-food-order/:order_number' element={<ViewFoodOrder/>}/>
         <Route path='/registered-users' element={<RagisteredUsers/>}/>
         <Route path='/dashboard' element={<Dashboard/>}/>
+        <Route path='/search-order' element={<SearchOrder/>}/>
         
       </Routes>
       

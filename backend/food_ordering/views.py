@@ -1056,3 +1056,95 @@ def registered_users(request):
 
 
 
+
+
+
+@api_view(['GET'])
+def search_orders(request):
+    """
+    Search orders by order number or customer name
+    """
+    try:
+        query = request.GET.get('query', '').strip()
+        
+        print(f"🔍 Search query received: '{query}'")  # ✅ Debug
+        
+        if not query:
+            return Response(
+                {"message": "Search query is required"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Check total orders first
+        all_orders = OrderAddress.objects.all()
+        print(f"📦 Total orders in DB: {all_orders.count()}")  # ✅ Debug
+        
+        # Search by order number
+        orders_by_number = OrderAddress.objects.filter(
+            order_number__icontains=query
+        ).select_related('user')
+        print(f"Found by order number: {orders_by_number.count()}")  # ✅ Debug
+        
+        # Search by customer
+        orders_by_customer = OrderAddress.objects.filter(
+            Q(user__first_name__icontains=query) |
+            Q(user__last_name__icontains=query) |
+            Q(user__email__icontains=query) |
+            Q(user__phone_number__icontains=query)
+        ).select_related('user')
+        print(f"Found by customer: {orders_by_customer.count()}")  # ✅ Debug
+        
+        # Combine
+        all_orders = (orders_by_number | orders_by_customer).distinct()
+        print(f"Total found: {all_orders.count()}")  # ✅ Debug
+        
+        results = []
+        for order_address in all_orders:
+            order_items = Order.objects.filter(
+                order_number=order_address.order_number,
+                is_order_placed=True
+            ).select_related('food')
+            
+            if not order_items.exists():
+                print(f"⚠️ No items for order {order_address.order_number}")
+                continue
+            
+            total_amount = sum(
+                float(item.food.item_price) * item.quantity 
+                for item in order_items
+            )
+            
+            payment = PaymentDetail.objects.filter(
+                order_number=order_address.order_number
+            ).first()
+            
+            user = order_address.user
+            
+            result = {
+                'id': order_address.id,
+                'order_number': order_address.order_number,
+                'customer_name': f"{user.first_name} {user.last_name}",
+                'customer_email': user.email,
+                'customer_phone': user.phone_number,
+                'address': order_address.address,
+                'status': order_address.order_final_status or 'processing',
+                'created_at': order_address.order_time.isoformat() if order_address.order_time else None,
+                'item_count': order_items.count(),
+                'total_amount': round(total_amount, 2),
+                'payment_mode': payment.payment_mode if payment else 'cod'
+            }
+            
+            results.append(result)
+        
+        print(f"✅ Returning {len(results)} results")  # ✅ Debug
+        
+        return Response(results, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        print(f"❌ Error: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return Response(
+            {"message": "Search failed"}, 
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )

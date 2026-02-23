@@ -37,6 +37,7 @@ urlpatterns = [
     path('view-order-details/<str:order_number>/', view_order_details),
     path('update-order-status/<str:order_number>/', update_order_status),
     path('registered-users/', registered_users),
+    path('search-orders/', search_orders),
    
     
 ]
